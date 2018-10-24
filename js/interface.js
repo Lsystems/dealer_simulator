@@ -187,56 +187,13 @@ class Interface{
     }
     
     hud(){
-        let hudNode=this.tool.createElement({
+        this.hudNode=this.tool.createElement({
             attr:{
                 id:'hud'
             }
         });
         
-        
-        // le véhicule
-        this.transport=this.tool.createElement({
-            attr:{
-                id:'transpmenu'
-            }
-            ,html:'<div class="tm_curr"></div><div class="tm_choice"></div>'
-        });
-        
-        let tCurr=this.transport.querySelector('.tm_curr');
-        let tChoice=this.transport.querySelector('.tm_choice');
-        
-        for(let t in this.game.items.transports){
-            let trans=this.game.items.transports[t];
-            
-            if(t===this.game.current.transport){
-                tCurr.innerHTML=`<div class="fas fa-${trans.ico}"></div>`
-            }
-            
-            let buyHtml='';
-            if(!trans.active){
-                buyHtml=`
-                    <div class="">${trans.price} Cr.</div>
-                `;
-            }
-            let C2Ctime=(trans.duration/60).toFixed(1);
-            let tItem=this.tool.createElement({
-                attr:{
-                    class:'tm_item'
-                }
-                ,html:`
-                    <div class="tmi_ico fas fa-${trans.ico}"></div>
-                    <div class="tmi_name">${trans.displayName}</div>
-                    ${buyHtml}
-                    <div class="tmi_info">
-                        <div><span class="fas fa-chrono"></span> ${C2Ctime}h</div>
-                        <div><span class="fas fa-briefcase"></span>+${trans.morePocket}</div>
-                    </div>
-                `
-            });            
-            tChoice.appendChild(tItem);
-        }
-        
-        hudNode.appendChild(this.transport);
+        this.transportMenu();
         
         // les poches
         this.pockets=this.tool.createElement({
@@ -246,10 +203,95 @@ class Interface{
             }
             ,html:'<span class="fas fa-briefcase"></span><span id="pvgauge"><span id="pvamnt"></span>/</span><span id="pvtotal"></span></span>'
         });
-        hudNode.appendChild(this.pockets);
+        this.hudNode.appendChild(this.pockets);
         this.refreshPocketVol();
         
-        this.header.appendChild(hudNode);
+        this.header.appendChild(this.hudNode);
+    }
+    
+    transportMenu(){
+        // le véhicule
+        let transMenu=this.tool.createElement({
+            attr:{
+                id:'transpmenu'
+            }
+            ,html:'<div class="tm_curr"></div><div class="tm_choice"></div>'
+        });
+        
+        let tCurr=transMenu.querySelector('.tm_curr');
+        let tChoice=transMenu.querySelector('.tm_choice');
+        
+        // on créer les sélecteurs de transport
+        for(let tr in this.game.items.transports){
+            let trans=this.game.items.transports[tr];
+            
+            // le transport actuel
+            if(tr===this.game.current.transport){
+                tCurr.innerHTML=`<div class="fas fa-${trans.ico}"></div>`
+            }
+            
+            // les achat de transport
+            let buyHtml='';
+            let inactiveClass='';
+            if(!trans.active){
+                buyHtml=`
+                    <div class="tmi_buytsp"><div class="tmi_buybtn btn">Acheter <span class="fas fa-${trans.ico}"></span> ${trans.price} Cr.</div>
+                `;
+                inactiveClass=' inactive';
+            }
+            
+            // le temps de transport
+            let C2Ctime=(trans.duration/60).toFixed(1);
+            
+            let tItem=this.tool.createElement({
+                attr:{
+                    class:'tm_item'+inactiveClass
+                }
+                ,html:`
+                    <div class="tmi_ico fas fa-${trans.ico}"></div>
+                    
+                    
+                    <div class="tmi_info">
+                        <span>
+                            <span class="fas fa-clock"></span> 
+                            ${C2Ctime}h
+                        </span>
+                        <span>
+                            <span class="fas fa-briefcase"></span>
+                            +${trans.morePocket}
+                        </span>
+                    </div>
+                    ${buyHtml}
+                `
+            });
+            
+            // bouton sélection du transport
+            if(trans.active){
+                ((n,t)=>{
+                    n.addEventListener('click',()=>{
+                        this.game.items.changeTransport(t);
+                    });
+                })(tItem,tr);
+                
+            }
+            // bouton achat transport
+            else{
+                let buyTransBtn=tItem.querySelector('.tmi_buybtn');
+                
+                ((n,t)=>{
+                   n.addEventListener('click',(e)=>{
+                      e.stopPropagation();
+                      this.game.items.buyTransport(t);
+                   });
+                })(buyTransBtn,tr);
+                
+            }
+            tChoice.appendChild(tItem);
+        } // end loop transport
+        
+        
+        
+        this.hudNode.appendChild(transMenu);        
     }
     
     refreshPocketVol(amnt=this.game.current.pocketAmnt,total=this.game.current.pocketCapacity){

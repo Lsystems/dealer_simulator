@@ -357,6 +357,13 @@ class Items{
         this.game.UI.refreshPocketVol();
     }
     
+    buyTransport(transCode){
+        console.log('buy '+transCode);
+    }
+    changeTransport(transCode){
+        console.log('buy '+transCode);
+    }
+    
     getAll(){
         let o=Object.assign({},this.items);
         return o;
