@@ -363,7 +363,7 @@ class Interface{
             // au click sur un lien ville
             ((n,cityCode,cityObj)=>{
                 n.addEventListener('click',()=>{
-                    if(this.current.game.pocketAmnt<=this.game.getPocketCapacity()){
+                    if(this.game.current.pocketAmnt<=this.game.getPocketCapacity()){
                         // on met à jour la ville, vers où on va
                         this.game.current.city=cityCode;
                         
