@@ -201,10 +201,29 @@ class Interface{
                 id:'pockets'
                 ,class:'hud_elem'
             }
-            ,html:'<span class="fas fa-briefcase"></span><span id="pvgauge"><span id="pvamnt"></span>/</span><span id="pvtotal"></span></span>'
+            ,html:`<span class="fas fa-cannabis"></span>
+            <span id="pvgauge">
+                <span id="pvamnt"></span>/<span id="pvtotal"></span>
+            </span>`
         });
         this.hudNode.appendChild(this.pockets);
         this.refreshPocketVol();
+        
+        this.header.appendChild(this.hudNode);
+        
+        // la toolbox (arme et autre)
+        this.toolbox=this.tool.createElement({
+            attr:{
+                id:'toolbox'
+                ,class:'hud_elem'
+            }
+            ,html:`<span class="fas fa-toolbox"></span>
+            <span id="tlgauge">
+                <span id="tlamnt"></span>/<span id="tltotal"></span>
+            </span>`
+        });
+        this.hudNode.appendChild(this.toolbox);
+        this.refreshToolBoxVol();
         
         this.header.appendChild(this.hudNode);
     }
@@ -261,7 +280,7 @@ class Interface{
                             ${C2Ctime}h
                         </span>
                         <span>
-                            <span class="fas fa-briefcase"></span>
+                            <span class="fas fa-cannabis"></span>
                             +${trans.morePocket}
                         </span>
                     </div>
@@ -334,6 +353,14 @@ class Interface{
         amntNode.innerHTML=amnt;
         this.pockets.querySelector('#pvtotal').innerHTML=total;
     }
+    
+    refreshToolBoxVol(amnt=this.game.current.weaponPocketAmnt,total=this.game.getWeaponPocketCapacity()){
+        let amntNode=this.toolbox.querySelector('#tlamnt');
+        
+        amntNode.innerHTML=amnt;
+        this.toolbox.querySelector('#tltotal').innerHTML=total;
+    }
+    
     
     citySelector(){
         this.cityBox=this.tool.createElement({
@@ -528,7 +555,7 @@ class Interface{
                     ${sellCol}
                     <div class="pl_qty"></div>
                     <div class="pl_unit"></div>
-                    <div class="pl_pockvol"><span class="fas fa-briefcase"></span></div>
+                    <div class="pl_pockvol"><span class="fas fa-cannabis"></span></div>
                     <div class="pl_buy"></div>
                     <div class="pl_buya"></div>
                 </div>
@@ -582,7 +609,7 @@ class Interface{
                             ret.amnt=parseInt(((this.game.getPocketCapacity()-this.game.current.pocketAmnt)/it.pocketVol).toFixed(0));
                         }
                         else{
-                            ret.amnt=this.game.current.weaponPocket;
+                            ret.amnt=this.game.current.weaponPocketAmnt;
                         }
                         
                         // s'il reste des poches et qu'on a pas assez d'argent pour les remplir, on achète ce qu'on peux au max
@@ -725,7 +752,7 @@ class Interface{
             if(prodBaseData.pocketVol){
                 let tv=prod.qty*prodBaseData.pocketVol;
                 totalVol=`
-                <div class="cp_weig"><span class="fas fa-briefcase"></span> ${tv}</div>`;
+                <div class="cp_weig"><span class="fas fa-cannabis"></span> ${tv}</div>`;
             }
             
             // vente authorisée uniquement pour les drogues

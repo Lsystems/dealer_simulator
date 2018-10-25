@@ -129,7 +129,9 @@ input {
 	display: flex;
 	align-items: center;
 }
-
+#hud > div {
+	margin-right: 1rem;
+}
 #transpmenu {
 	position: relative;
 	z-index: 2;
@@ -138,7 +140,6 @@ input {
 	width: 2.5rem;
 	background: #fff3;
 	text-align: center;
-	margin-right: 1rem;
 	height: var(--headerHeight);
 	font-size: 1.8rem;
     cursor:pointer;
@@ -216,7 +217,7 @@ input {
 	line-height: var(--plheight);
 	color: #B4B4B4;
 }
-#pvgauge {
+#pvgauge,#tlgauge {
 	margin-left: 0.5rem;
 }
 #pvamnt.dryqty {

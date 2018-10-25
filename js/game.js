@@ -27,21 +27,29 @@ class Game{
             ,money:20
             ,cart:[]
             ,pocketAmnt:0
-            ,pocketdefaultCapacity:50
+            ,pocketDefaultCapacity:50
             ,transport:'feet'
-            ,weaponPocket:0
+            ,weaponPocketAmnt:0
+            ,weaponPocketDefaultCapacity:1
             
         }        
     }
     
     getPocketCapacity(){
-        let def=this.current.pocketdefaultCapacity;
+        let def=this.current.pocketDefaultCapacity;
         let transportBonus=this.transports.transports[this.current.transport].morePocket;
         
         // TO DO : Bonus sac à dos (acheté à Carouf city)
         let bagBonus=0;
         
         return def + transportBonus + bagBonus;
+    }
+    
+    getWeaponPocketCapacity(){
+        let def=this.current.weaponPocketDefaultCapacity;
+        
+        
+        return def ;
     }
     
 }
