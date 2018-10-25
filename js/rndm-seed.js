@@ -1,3 +1,5 @@
+// require sha256(string)
+
 /**
  * Create a new pseudo random generator
  */
@@ -36,7 +38,7 @@ class RndmSeed {
     return String(parseInt(this._sha(str), 16)).slice(1)
   }
   _sha(str) {
-    return sha256(str).slice(0, 8)
+    return sha256(str).slice(0, 16)
   }
 }
 
@@ -44,7 +46,7 @@ class RndmSeed {
  * Test the generated randoms to know if the seed is revelant
  * @param {string?} seed the seed to test
  * @param {int?} total number of random to generate
- * @param {int?} precision can be 10, 100, 1000, ... (10^n)
+ * @param {int?} precision can be 10, 100, 1000, ... (10^n|n>0)
  */
 const testRndmSeed = (seed = 'test', total = 10000, precision = 10) => {
   const r = new RndmSeed(seed)
