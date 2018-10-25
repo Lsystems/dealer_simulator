@@ -543,9 +543,11 @@ class Interface{
         for(let d in items){
             let it=items[d];
             let itType=it.type;
-             
+            
             // ça prend dans les poches ?
-            let isRoomed=it.type==='weapon' && it.isAmmo || it.type!=='weapon';
+            let isNotAGun=it.type==='weapon' && it.isAmmo || it.type!=='weapon';
+            
+            // on construit le marché correspondant
             if(itType===this.activeMarket){
                 let line=this.tool.createElement({
                     attr:{
@@ -571,22 +573,32 @@ class Interface{
 
                 // valeur Achat Max
                 let buyAllAmnt=()=>{
-                    
-                    let leftPocket=parseInt(((this.game.getPocketCapacity()-this.game.current.pocketAmnt)/it.pocketVol).toFixed(0));
-                    let ret={
-                        amnt:leftPocket
-                        ,what:'space'
-                    }
-                    // s'il reste des poches et qu'on a pas assez d'argent pour les remplir, on achète ce qu'on peux au max
-                    let p=Math.floor(this.game.current.money/buyPrice);
-                    if(leftPocket && leftPocket > p){
-                        ret.amnt=p;
-                        ret.what='money';
+                    try{
+                        let ret={
+                            amnt:0
+                            ,what:'space'
+                        };
+                        if(isNotAGun){
+                            ret.amnt=parseInt(((this.game.getPocketCapacity()-this.game.current.pocketAmnt)/it.pocketVol).toFixed(0));
+                        }
+                        else{
+                            ret.amnt=this.game.current.weaponPocket;
+                        }
                         
+                        // s'il reste des poches et qu'on a pas assez d'argent pour les remplir, on achète ce qu'on peux au max
+                        let p=Math.floor(this.game.current.money/buyPrice);
+                        if(ret.amnt > p){
+                            ret.amnt=p;
+                            ret.what='money';
+                            
+                        }
+                        
+                        
+                        return ret;
                     }
-                    
-                    
-                    return ret;
+                    catch(e){
+                        console.log(e);
+                    }
                 };
                 
 
@@ -597,7 +609,7 @@ class Interface{
 
                 // colonne taille
                 let pRoomCol='<div class="pl_pockvol"></div>';
-                if(isRoomed)
+                if(isNotAGun)
                     pRoomCol=`<div class="pl_pockvol">${it.pocketVol}</div>`;
 
                 line.innerHTML=`

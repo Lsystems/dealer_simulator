@@ -29,6 +29,7 @@ class Game{
             ,pocketAmnt:0
             ,pocketdefaultCapacity:50
             ,transport:'feet'
+            ,weaponPocket:0
             
         }        
     }
