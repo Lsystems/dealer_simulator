@@ -29,7 +29,7 @@ class RndmSeed {
    * Generate the next random
    * @return {number}
    */
-  next(){
+  next() {
     return this.get(++this.index)
   }
   _value(str) {
@@ -40,32 +40,42 @@ class RndmSeed {
   }
 }
 
-
-const testRndmSeed = (seed='test', total=10000, precision=10) => {
+/**
+ * Test the generated randoms to know if the seed is revelant
+ * @param {string?} seed the seed to test
+ * @param {int?} total number of random to generate
+ * @param {int?} precision can be 10, 100, 1000, ... (10^n)
+ */
+const testRndmSeed = (seed = 'test', total = 10000, precision = 10) => {
   const r = new RndmSeed(seed)
   const s = Array(total)
     .fill(0)
     .reduce(a => {
-      const ref = Math.floor(r.next()*precision)
-      if(a[ref]) a[ref]++
+      const ref = Math.floor(r.next() * precision)
+      if (a[ref]) a[ref]++
       else a[ref] = 1
       return a
-    },{})
+    }, {})
   const expected = 100 / precision
   const avg = Object.entries(s)
-    .map(([key, value])=>([key, expected-value*100/total]))
+    .map(([key, value]) => ([key, expected - value * 100 / total]))
     .reduce((a, [k, v]) => {
       v = Math.abs(v)
-      if(a.min>v) a.min = v
-      if(a.max<v) a.max = v
+      if (a.min > v) a.min = v
+      if (a.max < v) a.max = v
       a.avg += v
       a.avg_i++
-      if(a.avg_i===precision) {
+      if (a.avg_i === precision) {
         a.avg /= precision
         delete a.avg_i
       }
       return a
-    }, {min:Infinity, max:0, avg:0, avg_i:0});
+    }, {
+      min: Infinity,
+      max: 0,
+      avg: 0,
+      avg_i: 0
+    });
 
   console.log(s, avg)
 }

@@ -130,9 +130,6 @@ input {
 	align-items: center;
 }
 
-#hud .fas {
-	font-size: 1.3rem;
-}
 #transpmenu {
 	position: relative;
 	z-index: 2;
@@ -147,10 +144,7 @@ input {
 	text-align: center;
 	margin-right: 1rem;
 	height: var(--headerHeight);
-}
-#hud .tm_curr .fas {
 	font-size: 1.8rem;
-	margin-top: 0.3rem;
 }
 .tm_choice {
 	position: absolute;
@@ -158,11 +152,56 @@ input {
 	background: #1a293a;
 	width: 14rem;
 }
+
 .tm_item {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
+	margin-bottom: 0.1rem;
+	cursor: pointer;
 }
-
+.tm_item:not(.inactive):hover {
+	filter: brightness(1.2);
+}
+.tmi_ico {
+	font-size: 2rem;
+	width: 3.5rem;
+	padding-left: 0.5rem;
+}
+.tmi_ico.fas.fa-walking {
+	padding-left: 1rem;
+}
+.tmi_buytsp {
+	width: 100%;
+	line-height: 1.5rem;
+}
+.tmi_buybtn {
+	background: #57ac43;
+	margin: 0.2rem 2rem;
+	line-height: 0.8rem;
+	color: #042502;
+}
+.tmi_ico {
+	font-size: 1.6rem;
+	width: 3.5rem;
+	padding-left: 0.5rem;
+}
+.tmi_info {
+	font-size: 0.9rem;
+	display: flex;
+	flex-grow: 1;
+	background: rgba(255,255,255,0.2);
+}
+.tmi_info > span {
+	margin: 0 0.3rem;
+	flex-grow: 1;
+	text-align: center;
+	color: #aac7fe;
+}
+.tm_item.inactive .tmi_ico, .tm_item.inactive .tmi_info {
+	filter: brightness(0.4);
+	cursor: default;
+}
 
 .pl_pockvol {
 	width: 2.5%;
