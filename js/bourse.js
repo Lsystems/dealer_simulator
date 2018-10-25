@@ -44,7 +44,7 @@ class BourseLine {
   }
   _calculate(index = this._line.length) {
     const base = this._getBase(index)
-    let newValue = base + delta
+    let newValue = base + this._getDelta(index)
     // Evite d'avoir une valeur en dessous de 0
     for (let delta = this._getDelta(index); newValue < 0; delta /= 2)
       newValue = base + delta
