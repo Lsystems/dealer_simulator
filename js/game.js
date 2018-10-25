@@ -14,6 +14,7 @@ class Game{
         
         this.UI=new Interface(this);
         this.items=new Items(this);
+        this.transports=new Transports(this);
         this.cities=new Cities(this);
         this.timer=new Timer(this);
         
@@ -26,10 +27,22 @@ class Game{
             ,money:20
             ,cart:[]
             ,pocketAmnt:0
-            ,pocketCapacity:50
+            ,pocketdefaultCapacity:50
             ,transport:'feet'
+            
         }        
     }
+    
+    getPocketCapacity(){
+        let def=this.current.pocketdefaultCapacity;
+        let transportBonus=this.transports.transports[this.current.transport].morePocket;
+        
+        // TO DO : Bonus sac à dos (acheté à Carouf city)
+        let bagBonus=0;
+        
+        return def + transportBonus + bagBonus;
+    }
+    
 }
 
 function Tools(){

@@ -217,17 +217,21 @@ class Interface{
             }
             ,html:'<div class="tm_curr"></div><div class="tm_choice"></div>'
         });
-        
+        let getCurrTrans=()=>this.game.transports.transports[this.game.current.transport];
         let tCurr=transMenu.querySelector('.tm_curr');
         let tChoice=transMenu.querySelector('.tm_choice');
         
+        tCurr.addEventListener('click',()=>{
+            transMenu.classList.toggle('active');
+        });
+        
         // on créer les sélecteurs de transport
-        for(let tr in this.game.items.transports){
-            let trans=this.game.items.transports[tr];
+        for(let tr in this.game.transports.transports){
+            let trans=this.game.transports.transports[tr];
             
             // le transport actuel
             if(tr===this.game.current.transport){
-                tCurr.innerHTML=`<div class="fas fa-${trans.ico}"></div>`
+                tCurr.innerHTML=`<div class="ico fas fa-${trans.ico}"></div>`
             }
             
             // les achat de transport
@@ -265,25 +269,51 @@ class Interface{
                 `
             });
             
+            
+            // ajout du click de sélection
+            let addSelectTransp=(n,t)=>{
+                n.addEventListener('click',()=>{
+                    let ok=this.game.transports.changeTransport(t);
+                    if(ok.status){
+                        // on change l'icone
+                        let newTrans=getCurrTrans();
+                        let oldTrans=this.game.transports.transports[ok.old];
+                        tCurr.querySelector('.ico').classList.replace('fa-'+oldTrans.ico,'fa-'+newTrans.ico);
+                        this.refreshPocketVol();
+                        this.refreshBuyAllBtn();
+                        transMenu.classList.toggle('active');
+                    }
+                    else{
+                        console.log(ok.reason);
+                    }
+                });
+            }
+            
             // bouton sélection du transport
             if(trans.active){
-                ((n,t)=>{
-                    n.addEventListener('click',()=>{
-                        this.game.items.changeTransport(t);
-                    });
-                })(tItem,tr);
-                
+                addSelectTransp(tItem,tr);
             }
             // bouton achat transport
             else{
                 let buyTransBtn=tItem.querySelector('.tmi_buybtn');
                 
-                ((n,t)=>{
+                ((n,tIt,t)=>{
                    n.addEventListener('click',(e)=>{
                       e.stopPropagation();
-                      this.game.items.buyTransport(t);
+                      let bought=this.game.transports.buyTransport(t);
+                      if(bought){
+                          n.parentNode.removeChild(n);
+                          tIt.classList.remove('inactive');
+                          addSelectTransp(tIt,t);
+                          this.bank();
+                      }
+                      else{
+                          
+                        // erreur
+                        this.errorModal({reason:'money'});
+                      }
                    });
-                })(buyTransBtn,tr);
+                })(buyTransBtn,tItem,tr);
                 
             }
             tChoice.appendChild(tItem);
@@ -294,7 +324,7 @@ class Interface{
         this.hudNode.appendChild(transMenu);        
     }
     
-    refreshPocketVol(amnt=this.game.current.pocketAmnt,total=this.game.current.pocketCapacity){
+    refreshPocketVol(amnt=this.game.current.pocketAmnt,total=this.game.getPocketCapacity()){
         let amntNode=this.pockets.querySelector('#pvamnt');
         
         amntNode.classList.remove('dryqty');
@@ -333,44 +363,50 @@ class Interface{
             // au click sur un lien ville
             ((n,cityCode,cityObj)=>{
                 n.addEventListener('click',()=>{
-                    
-                    // on met à jour la ville, vers où on va
-                    this.game.current.city=cityCode;
-                    
-                    // la popin de transport
-                    let modal=this.modal({
-                       title:'En route vers '+cityObj.displayName 
-                    });
-                    
-                    let tCode=this.game.current.transport;
-                    
-                    let tData=this.game.items.transports[tCode];
-                    
-                    let tIcon=`${tCode} fas fa-${tData.ico}`;
-                    
-                    // on avance dans le temps
-                    let transport=this.game.timer.fastForward(tData.duration);
-                    
-                    
-                    modal.body.innerHTML=`
-                        <div id="transportstage">
-                            <div class="fas fa-building"></div>
-                            <div class="perso ${tIcon}"></div>
-                            <div class="fas fa-building"></div>
-                        </div>
-                    `;
-                    
-                    transport.then(()=>{
-                        modal.closeModal();
-                        this.marketList();
-                        this.cart();
-                        this.cityBox.querySelector('.active').classList.remove('active');
-                        n.classList.add('active');
+                    if(this.current.game.pocketAmnt<=this.game.getPocketCapacity()){
+                        // on met à jour la ville, vers où on va
+                        this.game.current.city=cityCode;
                         
-                        if(this.game.debug){
-                            this.debugParam();
-                        }
-                    });
+                        // la popin de transport
+                        let modal=this.modal({
+                           title:'En route vers '+cityObj.displayName 
+                        });
+                        
+                        let tCode=this.game.current.transport;
+                        
+                        let tData=this.game.transports.transports[tCode];
+                        
+                        let tIcon=`${tCode} fas fa-${tData.ico}`;
+                        
+                        // on avance dans le temps
+                        let transport=this.game.timer.fastForward(tData.duration);
+                        
+                        
+                        modal.body.innerHTML=`
+                            <div id="transportstage">
+                                <div class="fas fa-building"></div>
+                                <div class="perso ${tIcon}"></div>
+                                <div class="fas fa-building"></div>
+                            </div>
+                        `;
+                        
+                        transport.then(()=>{
+                            modal.closeModal();
+                            this.marketList();
+                            this.cart();
+                            this.cityBox.querySelector('.active').classList.remove('active');
+                            n.classList.add('active');
+                            
+                            if(this.game.debug){
+                                this.debugParam();
+                            }
+                        });
+                        
+                    }
+                    // sinon trop lourd
+                    else{
+                        errorModal({reason:'weight'});
+                    }
                 });
                 
             })(node,c,city);
@@ -450,6 +486,26 @@ class Interface{
         console.log("DEBUG",data);
     }
     
+    // erreurs communes
+    errorModal(param){
+        let errorBox=this.modal({
+            title:'Dommage !'
+            ,closeBtn:true
+        });
+        let msg='Une erreur est survenue';
+        if(param.reason==='money'){
+            msg=`Vous n'avez pas assez d'argent`;
+        }
+        if(param.reason==='space'){
+            msg=`Vous n'avez pas assez de poche`;
+        }
+        if(param.reason==='weight'){
+            msg=`Vous ne pouvez pas vous déplacer, vous êtes trop lourd, veuillez vendre ou vider vos poches`;
+        }
+        errorBox.body.innerHTML=msg;
+    }    
+    
+    
     marketList(){
         let items=this.game.items.getAll();
         // vente authorisé uniquement sur le marché noir
@@ -481,20 +537,7 @@ class Interface{
         
         this.buyAllBtns=[];
         
-        let errorModal=(ok)=>{
-            let errorBox=this.modal({
-                title:'Dommage !'
-                ,closeBtn:true
-            });
-            let msg='Une erreur est survenue';
-            if(ok.reason==='money'){
-                msg=`Vous n'avez pas assez d'argent`;
-            }
-            if(ok.reason==='space'){
-                msg=`Vous n'avez pas assez de poche`;
-            }
-            errorBox.body.innerHTML=msg;
-        }
+
         
         
         for(let d in items){
@@ -527,7 +570,25 @@ class Interface{
                 }
 
                 // valeur Achat Max
-                let buyAllAmnt=()=>Math.floor(this.game.current.money/buyPrice);
+                let buyAllAmnt=()=>{
+                    
+                    let leftPocket=parseInt(((this.game.getPocketCapacity()-this.game.current.pocketAmnt)/it.pocketVol).toFixed(0));
+                    let ret={
+                        amnt:leftPocket
+                        ,what:'space'
+                    }
+                    // s'il reste des poches et qu'on a pas assez d'argent pour les remplir, on achète ce qu'on peux au max
+                    let p=Math.floor(this.game.current.money/buyPrice);
+                    if(leftPocket && leftPocket > p){
+                        ret.amnt=p;
+                        ret.what='money';
+                        
+                    }
+                    
+                    
+                    return ret;
+                };
+                
 
                 // colonne vente
                 let sellCol='';
@@ -551,7 +612,7 @@ class Interface{
                         <div class="pl_buyqty pl_buybtn btn">Acheter</div>
                     </div>
                     <div class="pl_buya">
-                        <div class="pl_buyall pl_buybtn btn">Ach. max (${buyAllAmnt()})</div>
+                        <div class="pl_buyall pl_buybtn btn">Ach. max (${buyAllAmnt().amnt})</div>
                     </div>
                 `;
 
@@ -563,12 +624,16 @@ class Interface{
 
                         let ok=this.game.items.buy(i,parseInt(qi.value),parseFloat(buyPrice));
                         if(ok.status){
+                            // refresh
+                            this.game.UI.bank();
+                            this.game.UI.cart();
+                            this.game.UI.refreshPocketVol();
                             // recalcul des lignes achat Max
                             this.refreshBuyAllBtn();
                             return;
                         }
                         // erreur
-                        errorModal(ok);
+                        this.errorModal(ok);
                     });
 
                 })(buyBtn,it,qtyInp);
@@ -578,18 +643,23 @@ class Interface{
                 let that=this;
                 // stockage des lignes achat Max pour refresh ultérieur
                 this.buyAllBtns.push({node:buyAllBtn,cb:function(){
-                    let baqty=Math.floor(that.game.current.money/buyPrice);
-
-                    this.node.innerHTML=`Ach. max (${baqty})`;
+                    this.node.innerHTML=`Ach. max (${buyAllAmnt().amnt})`;
                 }});
                 
                 // au click
                 ((b,i)=>{
                     b.addEventListener('click',()=>{
+                        // on va chercher le prix max achetable en fonction du total ET des poches
                         let qi=buyAllAmnt();
-                        if(qi>0){
-                            let ok=this.game.items.buy(i,qi,parseFloat(buyPrice));
+                        // si le montant possible est sup à 0
+                        if(qi.amnt>0){
+                            let ok=this.game.items.buy(i,qi.amnt,parseFloat(buyPrice));
                             if(ok){
+                                // refresh
+                                this.game.UI.bank();
+                                this.game.UI.cart();
+                                this.game.UI.refreshPocketVol();
+                                
                                 // on met le compteur à 0 pour ce bouton
                                 b.innerHTML='Ach. max (0)';
                                 // recalcul des lignes achat Max
@@ -597,10 +667,11 @@ class Interface{
                                 return;
                             }
                             // erreur
-                            errorModal(ok);
+                            this.errorModal(ok);
                         }
-                        // erreur
-                        errorModal({reason:'money'});
+                        
+                        // erreur sur quoi on ne peut pas acheter
+                        this.errorModal({reason:qi.what});
                     });
 
                 })(buyAllBtn,it);

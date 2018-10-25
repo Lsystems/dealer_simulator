@@ -210,49 +210,8 @@ class Items{
             
         };
         
-        this.transports={
-            feet:{
-                ico:'walking' // font awesome icon
-                ,duration:120 // minutes in game
-                ,price:0
-                ,active:true
-                ,displayName:'A pied'
-                ,morePocket:0
-            }
-            ,bicycle:{
-                ico:'bicycle'
-                ,duration:60
-                ,price:2500
-                ,active:false
-                ,displayName:'Vélo'
-                ,morePocket:10
-            }
-            ,moto:{
-                ico:'motorcycle'
-                ,duration:30
-                ,price:8000
-                ,active:false
-                ,displayName:'Moto'
-                ,morePocket:50
-            }
-            ,car:{
-                ico:'car-side'
-                ,duration:30
-                ,price:50000
-                ,active:false
-                ,displayName:'Voiture'
-                ,morePocket:150
-            }
-            ,helico:{
-                ico:'helicopter'
-                ,duration:10
-                ,price:420000
-                ,active:false
-                ,displayName:'Hélicoptère'
-                ,morePocket:300
-            }
-        }
-    }
+   
+    } // end constructor
     
     buy(prod,qty,price){
         let prodData=this.items[prod.code];
@@ -266,7 +225,7 @@ class Items{
         // ce n'est pas un flinge
         let isNotAGun=prodData.type==='weapon' && prodData.isAmmo || prodData.type!=='weapon';
         // il reste de la place dans les poches
-        let leftEmptySpace=(this.game.current.pocketCapacity-(totalVol+this.game.current.pocketAmnt))>=0;
+        let leftEmptySpace=(this.game.getPocketCapacity()-(totalVol+this.game.current.pocketAmnt))>=0;
         
         // si on a assez d'argent et qu'on peut le mettre dans le panier
         if(haveEnoughMoney && ((isNotAGun && leftEmptySpace) || !isNotAGun)){
@@ -291,10 +250,6 @@ class Items{
                 ,totalVol:totalVol
             });
             
-            // refresh
-            this.game.UI.bank();
-            this.game.UI.cart();
-            this.game.UI.refreshPocketVol();
             return {status:true};
         }
         let reason=false;
@@ -302,7 +257,7 @@ class Items{
         if(!haveEnoughMoney)
             reason='money';
         
-        if(haveEnoughMoney && isNotAGun && leftEmptySpace)
+        if(haveEnoughMoney && isNotAGun && !leftEmptySpace)
             reason='space';
         
         
@@ -355,13 +310,6 @@ class Items{
         this.game.current.cart.splice(cartIndex,1);
         this.game.UI.cart();
         this.game.UI.refreshPocketVol();
-    }
-    
-    buyTransport(transCode){
-        console.log('buy '+transCode);
-    }
-    changeTransport(transCode){
-        console.log('buy '+transCode);
     }
     
     getAll(){
