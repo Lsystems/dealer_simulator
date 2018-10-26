@@ -19,6 +19,7 @@ class Items{
                 ,type:'drug'
                 ,code:'weed'
                 ,pocketVol:3
+                ,gameIco:'weed' // ref to /assets/gamicons.js
             }
             ,shit:{
                 displayName:"Shit"
@@ -27,6 +28,7 @@ class Items{
                 ,type:'drug'
                 ,code:'shit'
                 ,pocketVol:2
+                ,gameIco:'shit'
                 
             }
             ,mushroom:{
@@ -36,6 +38,7 @@ class Items{
                 ,type:'drug'
                 ,code:'mushroom'
                 ,pocketVol:2
+                ,gameIco:'mushroom'
                 
             }
             ,meth:{
@@ -45,6 +48,7 @@ class Items{
                 ,type:'drug'
                 ,code:'meth'
                 ,pocketVol:1
+                ,gameIco:'crystal'
                 
             }
             ,lsd:{
@@ -54,6 +58,7 @@ class Items{
                 ,type:'drug'
                 ,code:'lsd'
                 ,pocketVol:0.5
+                ,gameIco:'lsd'
                 
             }
             ,cocain:{
@@ -63,6 +68,7 @@ class Items{
                 ,type:'drug'
                 ,code:'cocain'
                 ,pocketVol:1
+                ,gameIco:'cocain'
                 
             }
             ,xtc:{
@@ -72,6 +78,7 @@ class Items{
                 ,type:'drug'
                 ,code:'xtc'
                 ,pocketVol:0.5
+                ,gameIco:'ecstasy'
                 
             }
             ,heroin:{
@@ -81,6 +88,7 @@ class Items{
                 ,type:'drug'
                 ,code:'heroin'
                 ,pocketVol:1
+                ,gameIco:'heroin'
                 
             }
             
@@ -92,6 +100,7 @@ class Items{
                 ,type:'misc'
                 ,code:'flour'
                 ,pocketVol:4
+                ,gameIco:'flour'
                 
             }
             ,egg:{
@@ -101,6 +110,7 @@ class Items{
                 ,type:'misc'
                 ,code:'egg'
                 ,pocketVol:1
+                ,gameIco:'egg'
                 
             }
             ,sugar:{
@@ -110,6 +120,7 @@ class Items{
                 ,type:'misc'
                 ,code:'sugar'
                 ,pocketVol:4
+                ,gameIco:'cocain'
                 
             }
             ,chocolat:{
@@ -119,6 +130,7 @@ class Items{
                 ,type:'misc'
                 ,code:'chocolat'
                 ,pocketVol:2
+                ,gameIco:'chocolat'
                 
             }
             ,butter:{
@@ -128,6 +140,7 @@ class Items{
                 ,type:'misc'
                 ,code:'butter'
                 ,pocketVol:2
+                ,gameIco:'butter'
                 
             }
             
@@ -139,6 +152,7 @@ class Items{
                 ,unit:'pce'
                 ,type:'weapon'
                 ,code:'bbbat'
+                ,gameIco:'bbbat'
             }
             ,knife:{
                 displayName:"KA-BAR"
@@ -146,6 +160,7 @@ class Items{
                 ,unit:'pce'
                 ,type:'weapon'
                 ,code:'knife'
+                ,gameIco:'knife'
             }
             
             ,handgun:{
@@ -156,6 +171,7 @@ class Items{
                 ,code:'handgun'
                 ,mag:7
                 ,ammu:'c9mm'
+                ,gameIco:'gun'
             }
             
             ,machinegun:{
@@ -166,6 +182,7 @@ class Items{
                 ,code:'machinegun' 
                 ,mag:30
                 ,ammu:'nato228'
+                ,gameIco:'machgun'
             }
             
             ,shotgun:{
@@ -176,6 +193,7 @@ class Items{
                 ,code:'shotgun'
                 ,mag:6
                 ,ammu:'cal12'
+                ,gameIco:'shotgun'
             }
             
             ,c9mm:{
@@ -186,6 +204,7 @@ class Items{
                 ,code:'c9mm'
                 ,isAmmo:true
                 ,pocketVol:1
+                ,gameIco:'bullet'
             }
             
             ,cal12:{
@@ -196,6 +215,7 @@ class Items{
                 ,code:'cal12'
                 ,isAmmo:true
                 ,pocketVol:1
+                ,gameIco:'cal12'
             }
             
             ,nato228:{
@@ -206,6 +226,7 @@ class Items{
                 ,code:'nato228'
                 ,isAmmo:true
                 ,pocketVol:1 
+                ,gameIco:'bullets'
             }
             
         };

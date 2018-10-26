@@ -201,7 +201,8 @@ class Interface{
                 id:'pockets'
                 ,class:'hud_elem'
             }
-            ,html:`<span class="fas fa-cannabis"></span>
+            ,html:`
+            ${getSVGIcon('pocket',{classe:'he_ico'})}
             <span id="pvgauge">
                 <span id="pvamnt"></span>/<span id="pvtotal"></span>
             </span>`
@@ -217,7 +218,8 @@ class Interface{
                 id:'toolbox'
                 ,class:'hud_elem'
             }
-            ,html:`<span class="fas fa-toolbox"></span>
+            ,html:`
+            ${getSVGIcon('techandgun',{classe:'he_ico'})}
             <span id="tlgauge">
                 <span id="tlamnt"></span>/<span id="tltotal"></span>
             </span>`
@@ -247,18 +249,23 @@ class Interface{
         // on créer les sélecteurs de transport
         for(let tr in this.game.transports.transports){
             let trans=this.game.transports.transports[tr];
+            let tIcon=getSVGIcon(trans.ico,{classe:'tm_ico'});
+            
+            console.log(tIcon)
             
             // le transport actuel
             if(tr===this.game.current.transport){
-                tCurr.innerHTML=`<div class="ico fas fa-${trans.ico}"></div>`
+                tCurr.innerHTML=tIcon;
             }
             
             // les achat de transport
             let buyHtml='';
             let inactiveClass='';
             if(!trans.active){
+                let tBuyIcon=getSVGIcon(trans.ico,{classe:'tm_ico',fill:'#042502'});
+                
                 buyHtml=`
-                    <div class="tmi_buytsp"><div class="tmi_buybtn btn">Acheter <span class="fas fa-${trans.ico}"></span> ${trans.price} Cr.</div>
+                    <div class="tmi_buytsp"><div class="tmi_buybtn btn">Acheter ${tBuyIcon} ${trans.price} Cr.</div>
                 `;
                 inactiveClass=' inactive';
             }
@@ -271,7 +278,7 @@ class Interface{
                     class:'tm_item'+inactiveClass
                 }
                 ,html:`
-                    <div class="tmi_ico fas fa-${trans.ico}"></div>
+                    ${tIcon}
                     
                     
                     <div class="tmi_info">
@@ -385,7 +392,7 @@ class Interface{
                 }
             });
             
-            node.innerHTML='<span class="fas fa-building"></span> '+city.displayName;
+            node.innerHTML=getSVGIcon('city')+' '+city.displayName;
             
             // au click sur un lien ville
             ((n,cityCode,cityObj)=>{
@@ -550,12 +557,13 @@ class Interface{
             }
             ,html:`
                 <div class="priceline marketheader">
+                    <div class="pl_ico"></div>
                     <div class="pl_name"></div>
                     <div class="pl_buyprice">ACHAT</div>
                     ${sellCol}
                     <div class="pl_qty"></div>
                     <div class="pl_unit"></div>
-                    <div class="pl_pockvol"><span class="fas fa-cannabis"></span></div>
+                    <div class="pl_pockvol">${getSVGIcon('pocket')}</span></div>
                     <div class="pl_buy"></div>
                     <div class="pl_buya"></div>
                 </div>
@@ -638,8 +646,14 @@ class Interface{
                 let pRoomCol='<div class="pl_pockvol"></div>';
                 if(isNotAGun)
                     pRoomCol=`<div class="pl_pockvol">${it.pocketVol}</div>`;
-
+                
+                let ico=getSVGIcon(it.gameIco,{
+                   classe:'pl_icosvg' 
+                });
+                                
+                
                 line.innerHTML=`
+                    <div class="pl_ico">${ico}</div>
                     <div class="pl_name">${it.displayName}</div>
 
                     <div class="pl_buyprice">${buyPrice}</div>
@@ -752,7 +766,7 @@ class Interface{
             if(prodBaseData.pocketVol){
                 let tv=prod.qty*prodBaseData.pocketVol;
                 totalVol=`
-                <div class="cp_weig"><span class="fas fa-cannabis"></span> ${tv}</div>`;
+                <div class="cp_weig">${getSVGIcon('pocket')} ${tv}</div>`;
             }
             
             // vente authorisée uniquement pour les drogues

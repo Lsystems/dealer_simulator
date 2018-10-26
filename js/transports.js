@@ -1,9 +1,9 @@
 class Transports{
     constructor(game){
         this.game=game;
-        this.transports={
+        this.transports={ 
             feet:{
-                ico:'walking' // font awesome icon
+                ico:'walking' // /assets/gameicons/ key
                 ,duration:120 // minutes in game
                 ,price:0
                 ,active:true
@@ -11,7 +11,7 @@ class Transports{
                 ,morePocket:0
             }
             ,bicycle:{
-                ico:'bicycle'
+                ico:'cycling'
                 ,duration:60
                 ,price:2500
                 ,active:false
@@ -19,15 +19,15 @@ class Transports{
                 ,morePocket:10
             }
             ,moto:{
-                ico:'motorcycle'
-                ,duration:30
+                ico:'scooter'
+                ,duration:45
                 ,price:8000
                 ,active:false
-                ,displayName:'Moto'
+                ,displayName:'Scooter'
                 ,morePocket:50
             }
             ,car:{
-                ico:'car-side'
+                ico:'car'
                 ,duration:30
                 ,price:50000
                 ,active:false
@@ -35,7 +35,7 @@ class Transports{
                 ,morePocket:150
             }
             ,helico:{
-                ico:'helicopter'
+                ico:'helico'
                 ,duration:10
                 ,price:420000
                 ,active:false
