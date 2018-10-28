@@ -143,6 +143,16 @@ class Items{
                 ,gameIco:'butter'
                 
             }
+            ,backpack:{
+                displayName:"Sac à dos"
+                ,basePrice:500
+                ,unit:''
+                ,type:'misc'
+                ,code:'backpack'
+                ,pocketVol:0
+                ,gameIco:'backpack'
+                
+            }
             
             // armes
             
@@ -254,6 +264,12 @@ class Items{
             // on soustrait la transaction au total
             this.game.current.money-=total;
             
+            // si on a acheté le sac à dos
+            if(prod.code==='backpack'){
+                this.addBackPack();
+                return {status:true};
+            }
+            
             // gère les poches
             if(isNotAGun){
                 this.game.current.pocketAmnt+=totalVol;
@@ -321,6 +337,10 @@ class Items{
             this.game.UI.refreshPocketVol();
         }
         
+    }
+    
+    addBackPack(){
+        this.game.current.hasBackPack=true;
     }
     
     deleteFromCart(cartIndex){

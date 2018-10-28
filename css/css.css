@@ -80,18 +80,21 @@ input {
 	line-height: 24px;
 }
 #handler {
-    --headerHeight:2.5rem;
+	--headerHeight: 2.5rem;
 	position: fixed;
 	top: 0;
 	bottom: 0;
 	left: 0;
 	right: 0;
+	display: flex;
+	flex-wrap: wrap;
 }
 #header {
 	display: flex;
 	background: #1A293A;
 	height: var(--headerHeight);
 	line-height: var(--headerHeight);
+    width:100%
 }
 
 #bank {
@@ -106,20 +109,46 @@ input {
 	text-align: center;
 }
 #cities {
-	display: flex;
+	position: relative;
+	z-index: 2;
+	background: rgba(0,0,0,0.8);
+    width:2rem;
+    height:2rem;
+    overflow:hidden;
+    transition:all 0.2s;
 }
 
+#cities:hover {
+	width: 12rem;
+	height: 10rem;
+}
+#selcitybtn{
+    background: rgba(0,0,0,0.2);
+}
+
+#selcitybtn svg{
+    width:2rem;
+}
+
+#mainMenu {
+	width: 2rem;
+	background: #0F1C2C;
+}
+.gotocity.active {
+    background: rgba(255,255,255,0.3);
+}
+.gotocity.active svg{
+    display:block;
+}
+.gotocity svg{
+    display:none;
+}
 .gotocity {
-	background: #445161;
-	padding: 0px 0.5rem;
+	padding: 0.2rem 0.5rem;
 	cursor: pointer;
-	border-left: 0.1rem solid #5e5e5e;
 	display: flex;
 	align-items: center;
-}
-
-.gotocity.active {
-	background: #5F6C7C;
+	height: 1.5rem;
 }
 
 .gotocity:not(.active):hover {
@@ -224,6 +253,13 @@ input {
 	text-align: center;
 	color: #aac7fe;
 }
+.tmii_bonus {
+	display: flex;
+	justify-content: space-evenly;
+}
+.tmii_bonus svg {
+	width: 1.6rem;
+}
 .tm_item.inactive .tmi_ico, .tm_item.inactive .tmi_info {
 	filter: brightness(0.4);
 	cursor: default;
@@ -250,6 +286,7 @@ input {
 #main {
 	display: flex;
 	height: calc(100% - var(--headerHeight));
+	width: calc(100% - 2rem);
 }
 
 #marketbox {
@@ -382,6 +419,12 @@ input {
 	height: var(--cpphheight);
 	line-height: var(--cpphheight);
 }
+.cp_numbs {
+	width: 100%;
+	display: flex;
+	align-items: stretch;
+	justify-content: space-between;
+}
 .cp_headaction {
 	font-size: 1rem;
 	flex-grow: 1;
@@ -410,6 +453,8 @@ input {
 	width: 6.5rem;
 	font-size: 0.8rem;
 	border-radius: 0 0.2rem 0.2rem 0;
+	display: flex;
+	align-items: center;
 }
 
 .cp_weig {
@@ -417,8 +462,7 @@ input {
 	background: #6b1e9e;
 	width: 3rem;
 	font-size: 0.8rem;
-	border-radius: 0 0.2rem 0.2rem 0;
-	margin-top: 0.2rem;
+	border-radius: 0.2rem 0 0 0.2rem;
 	text-align: center;
 	display: flex;
 	align-items: center;
@@ -521,6 +565,31 @@ input {
 	padding: 0.2rem 1rem;
 }
 
+
+/**** MODALS ***/
+#bonusbackpack{
+    display:flex;
+}
+.bbpico{
+    width:12rem;
+}
+.bbbody {
+	width: 25rem;
+	text-align: center;
+}
+.bbppico{
+    width:6rem;
+}
+.bbpbody {
+	font-size: 1.3rem;
+	padding-top: 1rem;
+}
+.bbppbody {
+	font-size: 3rem;
+	display: flex;
+	align-items: center;
+	justify-items: center;
+}
 #transportstage {
 	position: relative;
 	height: 2.5rem;

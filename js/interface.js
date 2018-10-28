@@ -12,14 +12,25 @@ class Interface{
                 id:'handler'
             }
         });
-        
+        // entete
         this.header=this.tool.createElement({
             attr:{
                 id:'header'
             }
         });
-        
+
         handler.appendChild(this.header);
+        
+        // menu gauche
+        this.mainMenu=this.tool.createElement({
+            attr:{
+                id:'mainMenu'
+            }
+        });
+        
+        handler.appendChild(this.mainMenu);
+        
+        // main body
         this.main=this.tool.createElement({
             attr:{
                 id:'main'
@@ -27,6 +38,7 @@ class Interface{
         });
         
         handler.appendChild(this.main);
+        
         this.body.appendChild(handler);
         
         this.bank();
@@ -251,8 +263,6 @@ class Interface{
             let trans=this.game.transports.transports[tr];
             let tIcon=getSVGIcon(trans.ico,{classe:'tm_ico'});
             
-            console.log(tIcon)
-            
             // le transport actuel
             if(tr===this.game.current.transport){
                 tCurr.innerHTML=tIcon;
@@ -282,12 +292,12 @@ class Interface{
                     
                     
                     <div class="tmi_info">
-                        <span>
-                            <span class="fas fa-clock"></span> 
+                        <span class="tmii_bonus">
+                            ${getSVGIcon('chrono')}
                             ${C2Ctime}h
                         </span>
-                        <span>
-                            <span class="fas fa-cannabis"></span>
+                        <span class="tmii_bonus">
+                            ${getSVGIcon('pocket')}
                             +${trans.morePocket}
                         </span>
                     </div>
@@ -370,10 +380,13 @@ class Interface{
     
     
     citySelector(){
+        let citiIcon=getSVGIcon('city');
+        
         this.cityBox=this.tool.createElement({
             attr:{
                 id:'cities'
             }
+            ,html:`<div id="selcitybtn">${citiIcon}</div>`
         });
         let cities=this.game.cities.cities;
         for(let c in cities){
@@ -392,7 +405,7 @@ class Interface{
                 }
             });
             
-            node.innerHTML=getSVGIcon('city')+' '+city.displayName;
+            node.innerHTML=citiIcon+city.displayName;
             
             // au click sur un lien ville
             ((n,cityCode,cityObj)=>{
@@ -428,8 +441,12 @@ class Interface{
                             modal.closeModal();
                             this.marketList();
                             this.cart();
-                            this.cityBox.querySelector('.active').classList.remove('active');
+                            let oldNode=this.cityBox.querySelector('.active');
+                            oldNode.classList.remove('active');
+                            // oldNode.removeChild(oldNode.querySelector('svg'));
                             n.classList.add('active');
+                            // console.log(n.childNodes[0])
+                            // n.parentNode.insertBefore(citiIcon,n.childNodes[0]);
                             
                             if(this.game.debug){
                                 this.debugParam();
@@ -446,7 +463,8 @@ class Interface{
             })(node,c,city);
             this.cityBox.appendChild(node);
         }
-        this.header.appendChild(this.cityBox);
+        this.mainMenu.appendChild(this.cityBox);
+        // this.header.appendChild(this.cityBox);
     }
     
     modal(param=false){
@@ -571,9 +589,8 @@ class Interface{
         });
         
         this.buyAllBtns=[];
-        
-
-        
+        // les codes produits ou type produits sans achat max
+        this.noBuyAll=['backpack','service'];
         
         for(let d in items){
             let it=items[d];
@@ -581,6 +598,8 @@ class Interface{
             
             // ça prend dans les poches ?
             let isNotAGun=it.type==='weapon' && it.isAmmo || it.type!=='weapon';
+            
+            let hasBuyAllBtn=this.noBuyAll.indexOf(it.code)<0 && this.noBuyAll.indexOf(it.type)<0;
             
             // on construit le marché correspondant
             if(itType===this.activeMarket){
@@ -606,7 +625,7 @@ class Interface{
                     sellPrice=this.game.cities.getPrice(d,'sell');
                 }
 
-                // valeur Achat Max
+                // CALCUL valeur Achat Max
                 let buyAllAmnt=()=>{
                     try{
                         let ret={
@@ -614,7 +633,12 @@ class Interface{
                             ,what:'space'
                         };
                         if(isNotAGun){
-                            ret.amnt=parseInt(((this.game.getPocketCapacity()-this.game.current.pocketAmnt)/it.pocketVol).toFixed(0));
+                            if(it.pocketVol!==0){
+                                ret.amnt=parseInt(((this.game.getPocketCapacity()-this.game.current.pocketAmnt)/it.pocketVol).toFixed(0));
+                            }
+                            else{
+                                ret.amnt=0;
+                            }
                         }
                         else{
                             ret.amnt=this.game.current.weaponPocketAmnt;
@@ -650,7 +674,16 @@ class Interface{
                 let ico=getSVGIcon(it.gameIco,{
                    classe:'pl_icosvg' 
                 });
-                                
+                
+                let buyAllBtnHTML='';
+                let qtyReadOnly='';
+                if(hasBuyAllBtn){
+                    buyAllBtnHTML=`<div class="pl_buyall pl_buybtn btn">Ach. max (${buyAllAmnt().amnt})</div>`;
+                }
+                // achat à l'unité obligatoire
+                else{
+                    qtyReadOnly='readonly="readonly"';
+                }     
                 
                 line.innerHTML=`
                     <div class="pl_ico">${ico}</div>
@@ -658,15 +691,13 @@ class Interface{
 
                     <div class="pl_buyprice">${buyPrice}</div>
                         ${sellCol}
-                    <div class="pl_qty"><input type="type" value="1"></div>
+                    <div class="pl_qty"><input type="type" value="1" ${qtyReadOnly}></div>
                     <div class="pl_unit">${it.unit}</div>
                     ${pRoomCol}
                     <div class="pl_buy">
                         <div class="pl_buyqty pl_buybtn btn">Acheter</div>
                     </div>
-                    <div class="pl_buya">
-                        <div class="pl_buyall pl_buybtn btn">Ach. max (${buyAllAmnt().amnt})</div>
-                    </div>
+                    <div class="pl_buya">${buyAllBtnHTML}</div>
                 `;
 
                 ///////// Acheter la quantité
@@ -683,53 +714,88 @@ class Interface{
                             this.game.UI.refreshPocketVol();
                             // recalcul des lignes achat Max
                             this.refreshBuyAllBtn();
+                            
+                            if(i.code==='backpack'){
+                                line.parentNode.removeChild(line);
+                                let m=this.modal({
+                                    title:'BONUS DE POCHE !'
+                                    ,closeBtn:true
+                                });
+                                m.body.innerHTML=`
+                                    <div id="bonusbackpack">
+                                        <div>${getSVGIcon('backpack',{classe:'bbpico'})}</div>
+                                        <div class="bbbody">
+                                            <div class="bbpbody">
+                                            Vous avez acheté le sac à dos, vous bénéfiez d'un bonus permanent de 20 poches
+                                            </div>
+                                            <div class="bbppbody">
+                                                ${getSVGIcon('pocket',{classe:'bbppico'})} +20
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                
+                                `;
+                            }
+                            
                             return;
                         }
                         // erreur
                         this.errorModal(ok);
                     });
 
-                })(buyBtn,it,qtyInp);
+                })(buyBtn,it,qtyInp,line);
 
                 ///////// Acheter le max selon argent
-                let buyAllBtn=line.querySelector('.pl_buyall');
-                let that=this;
-                // stockage des lignes achat Max pour refresh ultérieur
-                this.buyAllBtns.push({node:buyAllBtn,cb:function(){
-                    this.node.innerHTML=`Ach. max (${buyAllAmnt().amnt})`;
-                }});
-                
-                // au click
-                ((b,i)=>{
-                    b.addEventListener('click',()=>{
-                        // on va chercher le prix max achetable en fonction du total ET des poches
-                        let qi=buyAllAmnt();
-                        // si le montant possible est sup à 0
-                        if(qi.amnt>0){
-                            let ok=this.game.items.buy(i,qi.amnt,parseFloat(buyPrice));
-                            if(ok){
-                                // refresh
-                                this.game.UI.bank();
-                                this.game.UI.cart();
-                                this.game.UI.refreshPocketVol();
-                                
-                                // on met le compteur à 0 pour ce bouton
-                                b.innerHTML='Ach. max (0)';
-                                // recalcul des lignes achat Max
-                                this.refreshBuyAllBtn();
-                                return;
+                if(hasBuyAllBtn){
+                    let buyAllBtn=line.querySelector('.pl_buyall');
+                    let that=this;
+                    // stockage des lignes achat Max pour refresh ultérieur
+                    this.buyAllBtns.push({node:buyAllBtn,cb:function(){
+                        this.node.innerHTML=`Ach. max (${buyAllAmnt().amnt})`;
+                    }});
+                    
+                    // au click
+                    ((b,i)=>{
+                        b.addEventListener('click',()=>{
+                            // on va chercher le prix max achetable en fonction du total ET des poches
+                            let qi=buyAllAmnt();
+                            // si le montant possible est sup à 0
+                            if(qi.amnt>0){
+                                let ok=this.game.items.buy(i,qi.amnt,parseFloat(buyPrice));
+                                if(ok){
+                                    // refresh
+                                    this.game.UI.bank();
+                                    this.game.UI.cart();
+                                    this.game.UI.refreshPocketVol();
+                                    
+                                    // on met le compteur à 0 pour ce bouton
+                                    b.innerHTML='Ach. max (0)';
+                                    // recalcul des lignes achat Max
+                                    this.refreshBuyAllBtn();
+                                    return;
+                                }
+                                // erreur
+                                this.errorModal(ok);
                             }
-                            // erreur
-                            this.errorModal(ok);
-                        }
-                        
-                        // erreur sur quoi on ne peut pas acheter
-                        this.errorModal({reason:qi.what});
-                    });
+                            
+                            // erreur sur quoi on ne peut pas acheter
+                            this.errorModal({reason:qi.what});
+                        });
 
-                })(buyAllBtn,it);
-
-                list.appendChild(line);
+                    })(buyAllBtn,it);
+                }
+                
+                // last call
+                // on autorise ou pas l'affichage de la ligne
+                let isOkLine=true;
+                
+                // Le sac à dos : 1 seule fois !
+                if(it.code==='backpack' && this.game.current.hasBackPack)
+                    isOkLine=false;
+                
+                if(isOkLine)
+                    list.appendChild(line);
             }
              
         }
@@ -818,9 +884,12 @@ class Interface{
                         <div class="cp_habtn cp_delfromcart fas fa-trash"></div>
                     </div>
                 </div>
-                <div class="cp_info">
+                
+                <div class="cp_numbs">
                     <div class="cp_mon">${prod.qty} ${prodBaseData.unit} x ${prod.price} Cr.</div>
                     ${totalVol}
+                </div>
+                <div class="cp_info">
                     <div class="cp_cityname">${cityName}<br>${d}</div>
                     ${profitCol}
                 </div>

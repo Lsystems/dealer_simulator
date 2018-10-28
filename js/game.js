@@ -31,6 +31,7 @@ class Game{
             ,transport:'feet'
             ,weaponPocketAmnt:0
             ,weaponPocketDefaultCapacity:1
+            ,hasBackPack:false
             
         }        
     }
