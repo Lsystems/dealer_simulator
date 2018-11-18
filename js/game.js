@@ -3,6 +3,9 @@
 class Game{
     constructor(){
         this.debug=false;
+        
+        this.obs=new Observ();
+        
         this.money=0;
         this.today=new Date(); // backup of the date, to compare
         this.todayPosix=this.today.getTime(); // posix
@@ -12,11 +15,7 @@ class Game{
         // on scope l'incrément du timer pour pouvoir le changer à la volée
         this.timerIncr=()=>(86400/(this.minForADay*60)*1000);
         
-        this.UI=new Interface(this);
-        this.items=new Items(this);
-        this.transports=new Transports(this);
-        this.cities=new Cities(this);
-        this.timer=new Timer(this);
+
         
         this.current={
             city:'centralCity'
@@ -24,7 +23,7 @@ class Game{
             ,month:this.today.getMonth()
             ,year:this.today.getFullYear()
             ,dayPassed:0
-            ,money:20
+            ,money:2000
             ,cart:[]
             ,pocketAmnt:0
             ,pocketDefaultCapacity:50
@@ -33,15 +32,27 @@ class Game{
             ,weaponPocketDefaultCapacity:1
             ,hasBackPack:false
             
-        }        
+        }   
+
+        this.modal=new Modal(this);
+        this.timer=new Timer(this); 
+        this.items=new Items(this);
+        this.transports=new Transports(this);
+        this.cities=new Cities(this);      
+        this.market=new Market(this);
+        this.cart=new Cart(this);
+        this.UI=new Interface(this);
+        this.UI.init();
     }
     
     getPocketCapacity(){
         let def=this.current.pocketDefaultCapacity;
+        
+        // bonus transport
         let transportBonus=this.transports.transports[this.current.transport].morePocket;
         
-        // TO DO : Bonus sac à dos (acheté à Carouf city)
-        let bagBonus=0;
+        // Bonus sac à dos (acheté à Carouf city)
+        let bagBonus=this.current.hasBackPack?20:0;
         
         return def + transportBonus + bagBonus;
     }
@@ -53,31 +64,25 @@ class Game{
         return def ;
     }
     
+    userFriendlyTime(mixedTime=false){
+        if(!mixedTime){
+            mixedTime=this.todayPosix;
+        }
+        let d=new Date(mixedTime);
+        let conv=(n)=>TOOLS.padWithZero(n);
+        let date=conv((d.getDate()));
+        let m=conv(d.getMonth());
+        let y=conv(d.getYear()-100);
+        let h=conv(d.getHours());
+        let mi=conv(d.getMinutes());
+        let s=conv(d.getSeconds());
+        
+        return `<span>${date}/${m}/${y}</span> <span>${h}:${mi}</span>`;
+            
+    }    
 }
 
-function Tools(){
-    return {
-        createElement:(param)=>{
-            let type='div';
-            if(param && param.type){
-               type=param.type; 
-            }
-            let a=document.createElement(type);
-            if(param && param.attr && typeof param.attr==='object'){
-                for(var attr in param.attr){
-                    let pattr=param.attr[attr];
-                    a.setAttribute(attr,pattr);
-                }
-            }
-            
-            if(param.html && param.html.length){
-                a.innerHTML=param.html;
-            }
-            return a;
-        }
-        ,padWithZero:(n)=>n<10?'0'+n:n
-    }
-}
+
 
 let d;
 window.onload=()=>{
@@ -85,7 +90,7 @@ window.onload=()=>{
 
         
     let g=d=new Game();
-    g.UI.init();
+    // g.UI.init();
     g.timer.start();
     
 }
