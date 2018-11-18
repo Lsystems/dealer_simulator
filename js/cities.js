@@ -1,7 +1,7 @@
 class Cities{
     constructor(game){
         this.game=game;
-        this.tool=Tools();
+        
         
         this.commons={
             modifiers:{
@@ -114,11 +114,11 @@ class Cities{
     } 
     
     // renvoi le prix d'un produit de la ville courante à un moment donné (ou pas)
-    getPrice(productName,mode,timestamp=false){
+    getPrice(product,mode,timestamp=false){
         try{
             let d=this.getData(timestamp);
-            let products=this.game.items.getAll();
-            let product=products[productName];
+            
+            let productName=product.code;
             let city=this.cities[this.game.current.city];
             
             if(!product || !mode){
@@ -146,7 +146,7 @@ class Cities{
                 this.cities[this.game.current.city].currentPrices[mode][productName]=parseFloat(price);
             }
             
-            return price;
+            return parseFloat(price);
         }
         catch(e){
             console.log(e);

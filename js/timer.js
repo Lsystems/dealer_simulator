@@ -23,23 +23,24 @@ class Timer{
             // on execute les abonnements à l'observer du timer
             
             // les secondes à chaque fois
-            this.execSubs('second');
+            
+            this.game.obs.trigger("timer:second");
 
             // les jours
             if(d.getDate()!==this.game.current.day){
-                this.execSubs('day');
+                this.game.obs.trigger("timer:day");
                 this.game.current.day=d.getDate();
             }
             
             // les mois
             if(d.getMonth()!==this.game.current.month){
-                this.execSubs('month');
+                this.game.obs.trigger("timer:month");
                 this.game.current.month=d.getMonth();
             }
             
             // les années
             if(d.getFullYear()!==this.game.current.year){
-                this.execSubs('year');
+                this.game.obs.trigger("timer:year");
                 this.game.current.year=d.getFullYear();
             }
         },this.delay);
@@ -68,7 +69,7 @@ class Timer{
                 this.setDelay(50);
                 
                 // on s'abonne au passe plat de l'interval
-                let aboId=this.timerObserver.second.push(()=>{
+                let aboId=this.game.obs.sub('timer:second',()=>{
                     let aT=this.game.todayPosix-startTime;
                     // si on est arrivé au temps escompté, on stop
                     if(aT>=toStop){
@@ -77,7 +78,7 @@ class Timer{
                         this.setDelay(1000);
                         
                         // on dégage l'abonnement
-                        this.timerObserver.second.splice(aboId-1,1);
+                        this.game.obs.unsub('timer:second',aboId);
                         res();
                     }
                 });
@@ -89,19 +90,5 @@ class Timer{
     pause(){
         clearInterval(this.timeInterval);
     }
-    
-    // exécute les fonctions abonnées à l'observer
-    execSubs(lib){
-        let arr=this.timerObserver[lib];
-        if(arr && arr.length){
-            for(let i=0,len=arr.length;i<len;i++){
-                try{
-                    arr[i]();
-                }
-                catch(e){
-                    console.log(e);
-                }
-            }
-        }
-    }    
+      
 }

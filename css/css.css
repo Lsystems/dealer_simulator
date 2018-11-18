@@ -480,15 +480,12 @@ input {
 	padding: 0.2rem;
 	font-size: 0.8rem;
 	font-weight: bold;
-	color: #d7d7d7;
 }
-
-.cp_profit .neg {
-    color:#FF0000;
-}
-
-.cp_profit .pos {
+.cpp_way{
 	color: #00FF00;
+}
+.cpp_way.neg {
+    color:#FF0000;
 }
 
 .cp_action {
@@ -588,7 +585,7 @@ input {
 	font-size: 3rem;
 	display: flex;
 	align-items: center;
-	justify-items: center;
+	justify-content: center;
 }
 #transportstage {
 	position: relative;
