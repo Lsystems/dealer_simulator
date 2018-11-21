@@ -26,6 +26,18 @@ class Timer{
             
             this.game.obs.trigger("timer:second");
 
+            let threeHours=10800000; // ms
+            // let oneTimeSlice=
+            let currentSliceTime=(this.game.current.dayZero+(this.game.current.timeSlice*threeHours));
+            let nextTimeSlice=currentSliceTime+threeHours;
+            
+            // la tranche de temps pour tout le jeu = 3h
+            if(nextTimeSlice>this.game.todayPosix){
+                console.log('nextST')
+                // this.game.obs.trigger("timer:sliceTime");
+                
+            }
+
             // les jours
             if(d.getDate()!==this.game.current.day){
                 this.game.obs.trigger("timer:day");

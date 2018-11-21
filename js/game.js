@@ -19,6 +19,7 @@ class Game{
         // l'objet à sauvegarder, pas de fonction dedans !
         this.current={
             city:'centralCity'
+            ,dayZero:this.today.getTime()
             ,day:this.today.getDate()
             ,month:this.today.getMonth()
             ,year:this.today.getFullYear()
@@ -31,6 +32,7 @@ class Game{
             ,weaponPocketAmnt:0
             ,weaponPocketDefaultCapacity:1
             ,hasBackPack:false
+            ,timeSlice:0
             
         }   
 
