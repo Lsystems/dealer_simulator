@@ -16,14 +16,14 @@ class Game{
         this.timerIncr=()=>(86400/(this.minForADay*60)*1000);
         
 
-        
+        // l'objet à sauvegarder, pas de fonction dedans !
         this.current={
             city:'centralCity'
             ,day:this.today.getDate()
             ,month:this.today.getMonth()
             ,year:this.today.getFullYear()
             ,dayPassed:0
-            ,money:2000
+            ,money:20000000
             ,cart:[]
             ,pocketAmnt:0
             ,pocketDefaultCapacity:50

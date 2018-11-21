@@ -153,6 +153,7 @@ class Interface{
         let tCurr=transMenu.querySelector('.tm_curr');
         let tChoice=transMenu.querySelector('.tm_choice');
         
+        // ouvre/ferme le menu
         tCurr.addEventListener('click',()=>{
             transMenu.classList.toggle('active');
         });
@@ -163,7 +164,9 @@ class Interface{
             let tIcon=getSVGIcon(trans.ico,{classe:'tm_ico'});
             
             // le transport actuel
+            let actualClass='';
             if(tr===this.game.current.transport){
+                actualClass=' actual';
                 tCurr.innerHTML=tIcon;
             }
             
@@ -178,26 +181,25 @@ class Interface{
                 `;
                 inactiveClass=' inactive';
             }
-            
             // le temps de transport
             let C2Ctime=(trans.duration/60).toFixed(1);
             
+            //le sélecteur
             let tItem=TOOLS.createElement({
                 attr:{
-                    class:'tm_item'+inactiveClass
+                    class:'tm_item'+inactiveClass+actualClass
                 }
                 ,html:`
                     ${tIcon}
                     
-                    
                     <div class="tmi_info">
                         <span class="tmii_bonus">
                             ${getSVGIcon('chrono')}
-                            ${C2Ctime}h
+                            <span>${C2Ctime}h</span>
                         </span>
                         <span class="tmii_bonus">
                             ${getSVGIcon('pocket')}
-                            +${trans.morePocket}
+                            <span>+${trans.morePocket}</span>
                         </span>
                     </div>
                     ${buyHtml}
@@ -205,21 +207,20 @@ class Interface{
             });
             
             
-            // ajout du click de sélection
+            // ajout du click de sélection d'un transport
             let addSelectTransp=(n,t)=>{
                 n.addEventListener('click',()=>{
-                    let ok=this.game.transports.changeTransport(t);
-                    if(ok.status){
-                        // on change l'icone
-                        let newTrans=getCurrTrans();
-                        let oldTrans=this.game.transports.transports[ok.old];
-                        tCurr.querySelector('.ico').classList.replace('fa-'+oldTrans.ico,'fa-'+newTrans.ico);
-                        this.refreshPocketVol();
-                        this.refreshBuyAllBtn();
-                        transMenu.classList.toggle('active');
+                    try{
+                        this.game.obs.trigger("changeTransport",t);
+                        this.game.obs.sub("enterTransport",()=>{
+                            console.log('enterTransport UI')
+                            // on change l'icone
+                            let newTrans=getCurrTrans();
+                            tCurr.innerHTML=getSVGIcon(newTrans.ico,{classe:'tm_ico'});
+                        },{noRepeat:true});
                     }
-                    else{
-                        console.log(ok.reason);
+                    catch(e){
+                        TOOLS.log(e);
                     }
                 });
             }
@@ -331,50 +332,26 @@ class Interface{
             ((n,cityCode,cityObj)=>{
                 n.addEventListener('click',()=>{
                     if(this.game.current.pocketAmnt<=this.game.getPocketCapacity()){
+                        
                         // on met à jour la ville, vers où on va
                         this.game.current.city=cityCode;
                         
-                        // la popin de transport
-                        let modal=this.game.modal.pop({
-                           title:'En route vers '+cityObj.displayName 
+                        // on quitte la ville
+                        this.game.obs.trigger('leaveCity',{
+                            cityName:cityObj.displayName
+                            ,cityCode:cityCode
                         });
                         
-                        let tCode=this.game.current.transport;
-                        
-                        let tData=this.game.transports.transports[tCode];
-                        
-                        let tIcon=`${tCode} fas fa-${tData.ico}`;
-                        
-                        // on avance dans le temps
-                        let transport=this.game.timer.fastForward(tData.duration);
-                        
-                        
-                        modal.body.innerHTML=`
-                            <div id="transportstage">
-                                <div class="fas fa-building"></div>
-                                <div class="perso ${tIcon}"></div>
-                                <div class="fas fa-building"></div>
-                            </div>
-                        `;
-                        
-                        transport.then(()=>{
-                            try{
-                                modal.closeModal();
-                                let oldNode=this.cityBox.querySelector('.active');
-                                oldNode.classList.remove('active');
-                                n.classList.add('active');
-
-                                this.game.obs.trigger('changeCity',cityCode);
-                            }
-                            catch(e){
-                                TOOLS.log(e);
-                            }
-                        });
-                        
+                        // quand on entre dans l'autre ville, on refresh l'affichage du sélecteur de ville
+                        this.game.obs.sub('enterCity',()=>{
+                            let oldNode=this.cityBox.querySelector('.active');
+                            oldNode.classList.remove('active');
+                            n.classList.add('active');
+                        },{noRepeat:true});
                     }
                     // sinon trop lourd
                     else{
-                        errorModal({reason:'weight'});
+                        this.game.obs.trigger('tooMuchWeight');
                     }
                 });
                 
@@ -384,7 +361,7 @@ class Interface{
         this.mainMenu.appendChild(this.cityBox);
         // this.header.appendChild(this.cityBox);
     }
-    
+ /*    
     modal(param=false){
         
         let title='';
@@ -433,7 +410,7 @@ class Interface{
             ,closeModal:closeModal
         }
     }
-
+ */
        
 
     

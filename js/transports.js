@@ -9,6 +9,7 @@ class Transports{
                 ,active:true
                 ,displayName:'A pied'
                 ,morePocket:0
+                ,code:'feet'
             }
             ,bicycle:{
                 ico:'cycling'
@@ -17,6 +18,7 @@ class Transports{
                 ,active:false
                 ,displayName:'Vélo'
                 ,morePocket:10
+                ,code:'bicycle'
             }
             ,moto:{
                 ico:'scooter'
@@ -25,6 +27,7 @@ class Transports{
                 ,active:false
                 ,displayName:'Scooter'
                 ,morePocket:50
+                ,code:'moto'
             }
             ,car:{
                 ico:'car'
@@ -33,6 +36,7 @@ class Transports{
                 ,active:false
                 ,displayName:'Voiture'
                 ,morePocket:150
+                ,code:'car'
             }
             ,helico:{
                 ico:'helico'
@@ -41,8 +45,11 @@ class Transports{
                 ,active:false
                 ,displayName:'Hélicoptère'
                 ,morePocket:300
+                ,code:'helico'
             }
         }
+        
+        this.onEvent();
     }
 
     
@@ -59,24 +66,29 @@ class Transports{
         return false;
     }
     
+    onEvent(){
+        this.game.obs.sub('changeTransport',(d)=>this.changeTransport(d));
+    }
+    
     changeTransport(transCode){
         
+        let ok=true;
         
-        console.log('change '+transCode);
         let tran=this.transports[transCode];
-        if(tran && tran.active){
-            let old=(()=>this.game.current.transport)();
-            this.game.current.transport=transCode;
-            return {status:true,old:old};
-        }
-        let reason='Véhicule indisponible';
         
-        // ici check pour d'autre raison
+        if(!tran || (tran && !tran.active)){
+            ok=false;
+        }
+        // ici check pour d'autre raison de ne pas pouvoir changer de transport
         // - fourrière
         // - panne 
         // - etc..
         
-        return {status:false,reason:reason};
+        if(ok){
+            this.game.current.transport=transCode;
+            this.game.obs.trigger("enterTransport",transCode);
+            TOOLS.log('NOTICE:: Transports change transport : '+transCode);
+        }
     }
 
 }

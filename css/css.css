@@ -209,6 +209,9 @@ input {
 	margin-bottom: 0.1rem;
 	cursor: pointer;
 }
+.tm_item.actual {
+	background: #155536;
+}
 .tm_item:not(.inactive):hover {
 	filter: brightness(1.2);
 }
@@ -253,9 +256,13 @@ input {
 	text-align: center;
 	color: #aac7fe;
 }
+.actual .tmi_info > span {
+	color: #e0ffec;
+}
 .tmii_bonus {
 	display: flex;
 	justify-content: space-evenly;
+    align-items:center;
 }
 .tmii_bonus svg {
 	width: 1.6rem;
@@ -425,7 +432,7 @@ input {
 	align-items: stretch;
 	justify-content: space-between;
 }
-.cp_headaction {
+.cph_headaction {
 	font-size: 1rem;
 	flex-grow: 1;
 	display: flex;
@@ -515,7 +522,10 @@ input {
 	background: #984fc5;
 	color: #1b042f;
 }
-
+.cp_reloadbtn {
+	background: #ffe300;
+	color: #d90000;
+}
 #modalhandler {
 	position: fixed;
 	top: 0;

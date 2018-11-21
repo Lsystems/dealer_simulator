@@ -43,7 +43,7 @@ class Cart{
         });
         
         // au changement d'une ville
-        this.game.obs.sub('changeCity',()=>{
+        this.game.obs.sub('enterCity',()=>{
             this.refreshCart();
         });
     }
@@ -110,8 +110,9 @@ class Cart{
             iNode.innerHTML=`
                 
                 <div class="cp_phead">
-                    <div class="cp_name">${itemDB.displayName} ${totalCR} Cr.</div>
-                    <div class="cp_headaction">
+                    <div class="cph_itemname">${itemDB.displayName}</div> 
+                    <div class="cph_itemcost">${totalCR} Cr.</div>
+                    <div class="cph_headaction">
                         <div class="cp_habtn cp_delfromcart fas fa-trash"></div>
                     </div>
                 </div>
@@ -122,7 +123,7 @@ class Cart{
                 </div>
                 <div class="cp_info">
                     <div class="cp_cityname">${cityName}<br>${d}</div>
-                    <div class="cp_profit">Profit : <span class="cpp_way"></span></div>
+                    <div class="cp_profit"></div>
                 </div>
                 <div class="cp_action">
                     <div class="cp_sellqty">
@@ -165,10 +166,11 @@ class Cart{
     
     refreshProfit(dynaCartItem){
         let item=dynaCartItem.getItem();
-        let node=dynaCartItem.node.querySelector('.cpp_way');
+        let node=dynaCartItem.node.querySelector('.cp_profit');
         let p=this.game.items.getProfit(item);
-        (p<0?node.classList.toggle('neg',true):node.classList.toggle('neg',false));
-        node.innerHTML=p+' Cr.';
+        // style pour le negatif
+        let neg=p<0?' neg':'';
+        node.innerHTML=`Profit : <span class="cpp_way${neg}">${p} Cr.</span>`;
     }
     
     refreshPocketTotalVolum(dynaCartItem){
@@ -193,7 +195,7 @@ class Cart{
         // Bouton vendre
         let sellBtnQty=TOOLS.createElement({
             attr:{
-                class:(`cp_sellbtn btn${inactiveClass}`)
+                class:`cp_sellbtn btn${inactiveClass}`
             }
             ,html:'Vendre'
         });
@@ -220,6 +222,50 @@ class Cart{
                 this.game.items.sell(dynaCartItem,item.qty);
         });       
         
+    }
+    
+    
+    miscAction(dynaCartItem){
+        let item=dynaCartItem.getItem();
+        let node=dynaCartItem.node.querySelector('.cpa_btn'); 
+        node.innerHTML='';
+        let qtyInp=dynaCartItem.node.querySelector('.cp_sellqty input');  
+        
+        // Bouton Utiliser
+        let useBtnQty=TOOLS.createElement({
+            attr:{
+                class:`cp_usebtn btn`
+            }
+            ,html:'Utiliser'
+        });
+        
+        node.appendChild(useBtnQty);
+        
+        useBtnQty.addEventListener('click',()=>{
+            alert("USE");
+        });
+    }
+    
+    
+    weaponAction(dynaCartItem){
+        let item=dynaCartItem.getItem();
+        let node=dynaCartItem.node.querySelector('.cpa_btn'); 
+        node.innerHTML='';
+        let qtyInp=dynaCartItem.node.querySelector('.cp_sellqty input');  
+        
+        // Bouton Utiliser
+        let reloadBtn=TOOLS.createElement({
+            attr:{
+                class:`cp_reloadbtn btn`
+            }
+            ,html:'(Re)Charger'
+        });
+        
+        node.appendChild(reloadBtn);
+        
+        reloadBtn.addEventListener('click',()=>{
+            alert("RELOAD");
+        });
     }
     
     deleteFromCart(dynaCartItem){

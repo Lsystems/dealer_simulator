@@ -44,6 +44,10 @@ class Modal{
             this.body.removeChild(modal);
         }
         
+        let setTitle=(title='')=>{
+            modal.querySelector('.mch_title').innerHTML=title;
+        }
+        
         if(closeBtnHTML.length){
             modal.querySelector('.mch_close').addEventListener('click',()=>{
                 closeModal();
@@ -57,6 +61,7 @@ class Modal{
         return {
             body:modal.querySelector('.mc_body')
             ,closeModal:closeModal
+            ,setTitle:setTitle
         }
     }
 
@@ -104,19 +109,71 @@ class Modal{
                 ,closeBtn:true
                 
             }
+            ,leaveCity:{
+                msg:(d,m)=>{
+                    return this.moveToCity(d,m);
+                }
+            }
         }
         for(let eventName in subs){
             let p=subs[eventName];
-            this.game.obs.sub(eventName,()=>{
+            this.game.obs.sub(eventName,(data=false)=>{
+                
                 let m=this.pop({
-                    title:p.title
+                    title:(p.title?p.title:'')
                     ,closeBtn:p.closeBtn
                 });
-                m.body.innerHTML=p.msg;
+                
+                if(typeof p.msg==='function'){
+                    p.msg(data,m);
+                }
+                if(typeof p.msg==='string'){
+                    m.body.innerHTML=p.msg;
+                }
             });
         }
     }
     
+    moveToCity(data,modal){
+        try{            
+            modal.setTitle('En route vers '+data.cityName); 
+            
+            let tCode=this.game.current.transport;
+            
+            let tData=this.game.transports.transports[tCode];
+            
+            let tIcon=`${tCode} fas fa-${tData.ico}`;
+            
+            let html=`
+                <div id="transportstage">
+                    <div class="fas fa-building"></div>
+                    <div class="perso ${tIcon}"></div>
+                    <div class="fas fa-building"></div>
+                </div>            
+            `;            
+            
+            // on avance dans le temps
+            let transport=this.game.timer.fastForward(tData.duration);
+            
+            
+            transport.then(()=>{
+                try{
+                    modal.closeModal();
+                    this.game.obs.trigger('enterCity');
+                }
+                catch(e){
+                    TOOLS.log(e);
+                }
+            });
+                                
+
+            
+            modal.body.innerHTML=html;
+            
+        }catch(e){
+            TOOLS.log(e);
+        }
+    }
     
     
           

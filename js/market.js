@@ -240,7 +240,7 @@ class Market{
                 line.node.parentNode.removeChild(line.node);
         }
         catch(e){
-            console.log(e);
+            TOOLS.log(e);
         }
     }
     
@@ -263,7 +263,7 @@ class Market{
             this[marketType+'Line'](o,line.item);
         }
         catch(e){
-            console.log(e);
+            TOOLS.log(e);
         }
     }
     
@@ -462,8 +462,7 @@ class Market{
         });
         
         // au changement d'une ville
-        this.game.obs.sub('changeCity',(cityCode)=>{
-            console.log("change city "+cityCode);
+        this.game.obs.sub('enterCity',()=>{
             this.refresh();
         });
     
