@@ -82,7 +82,10 @@ class Observ{
                     delete this.obs[eventName];
                 }
             }
-            
+            // log les evenements qui matchent vvv
+            if(/^(bourse:|buyItem|sellItem)/.test(eventName))
+                // say that you need to log this event elsewhere
+                this.trigger('logEvent', {eventName, data})
         }
         catch(e){
             TOOLS.log(e);

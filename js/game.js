@@ -6,6 +6,8 @@ class Game{
         
         this.obs=new Observ();
         
+        this.onEvent()
+        
         this.money=0;
         this.today=new Date(); // backup of the date, to compare
         this.todayPosix=this.today.getTime(); // posix
@@ -31,18 +33,31 @@ class Game{
             ,weaponPocketAmnt:0
             ,weaponPocketDefaultCapacity:1
             ,hasBackPack:false
-            
-        }   
-
+            ,bourseSeed:'INITIAL_SEED'
+            ,eventLog: []
+        }
+        
+        
         this.modal=new Modal(this);
-        this.timer=new Timer(this); 
+        this.timer=new Timer(this);
         this.items=new Items(this);
         this.transports=new Transports(this);
-        this.cities=new Cities(this);      
+        this.cities=new Cities(this);
         this.market=new Market(this);
         this.cart=new Cart(this);
+        this.bourse=new Bourse(this);
         this.UI=new Interface(this);
         this.UI.init();
+    }
+
+    onEvent() {
+        this.obs.sub('logEvent', ({eventName, data}) =>
+            this.current.eventLog.push({
+                timestamp: this.today.getTime()
+                ,eventName
+                ,data
+            })
+        )
     }
     
     getPocketCapacity(){
