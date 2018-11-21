@@ -1,5 +1,84 @@
 // require RndmSeed
 
+class Bourse {
+  constructor(game) {
+    this.game = game
+
+    this.main = new BourseLine({
+      seed: this.game.current.bourseSeed,
+    })
+
+    this.bonus = 0
+
+    // stoque les bourses des villes
+    this.cities = {}
+  }
+
+  onEvent(){
+    this.game.obs.sub('timer:sliceTime', this.onNewTimeSlice.bind(this))
+    this.game.obs.sub('bourse:bonus', bonus => this.bonus += bonus)
+  }
+
+  onNewTimeSlice() {
+    // TODO: fillit
+  }
+
+  /**
+   * add a subbourse
+   * @param {string} city the city name or id
+   */
+
+  addCity(city) {
+
+    // add listener
+    this.game.obs.sub(`bourse:${city}.bonus`,
+      bonus => this.cities[city]._bonus += bonus
+    )
+    
+    // create the city
+    return this.cities[city] = {
+      bourse: this.main.subBourse({power: 5})
+      ,_bonus: 0
+      ,get bonus() {
+        return this.bonus + this.cities[city]._bonus
+      }
+      ,products: {}
+      ,addProduct(product) {
+        let currentCity = this.cities[city]
+        // ajout du listener pour la modification du bonus
+        this.game.obs.sub(`bourse:${city}:${product}.bonus`,
+          bonus => currentCity.products[product]._bonus += bonus
+        )
+
+        // create the product
+        return currentCity.products[product] = {
+          bourse: currentCity.bourse.subBourse({power: 5})
+          ,_bonus: 0
+          ,get bonus() {
+            return currentCity.bonus + currentCity.products[product]._bonus
+          }
+          ,get fluctuation() {
+            let currentProduct = currentCity.products[product]
+            let index = this.game.current.timeSlice
+            // retourne la valeur en pourcentage de la bourse actuelle
+            return Math.max(currentProduct.bourse.get(index) + currentProduct.bonus, 0)
+          }
+          ,get line() {
+            let currentProduct = currentCity.products[product]
+            let index = this.game.current.timeSlice
+            // retourne la liste de valeurs de la bourse du produit
+            return currentProduct.bourse.getLineUntil(index)
+          }
+        }
+      }
+    }
+  }
+
+  getFluctuation(city, product) {
+    return this.cities[city].products[product].fluctuation
+  }
+}
+
 class BourseLine {
   /**
    * Create a new bourse
