@@ -108,5 +108,5 @@ window.onload=()=>{
     let g=d=new Game();
     // g.UI.init();
     g.timer.start();
-    
+    window.game=g
 }

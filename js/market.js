@@ -288,6 +288,7 @@ class Market{
     drugLine(lineNodes,item){
         // prix de vente
         item.sellPrice=this.game.cities.getPrice(item,'sell');
+        console.log(item.sellPrice)
         lineNodes.pl_sellprice.innerHTML=item.sellPrice
         
         // prix d'achat
@@ -465,6 +466,9 @@ class Market{
         this.game.obs.sub('enterCity',()=>{
             this.refresh();
         });
+
+        // quand la bourse se met a jour
+        this.game.obs.sub('bourse:update', () => this.refresh())
     
     }
 

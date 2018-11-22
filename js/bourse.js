@@ -7,11 +7,13 @@ class Bourse {
     this.main = new BourseLine({
       seed: this.game.current.bourseSeed,
     })
-
+    this._index = 0
     this.bonus = 0
 
     // stoque les bourses des villes
     this.cities = {}
+
+    this.onEvent()
   }
 
   onEvent(){
@@ -20,33 +22,31 @@ class Bourse {
   }
 
   onNewTimeSlice() {
-    // TODO: fillit
+    this._index++
+    this.game.obs.trigger('bourse:update')
   }
 
-  /**
-   * add a subbourse
-   * @param {string} city the city name or id
-   */
-
-  addCity(city) {
+  getCity(city) {
+    if(this.cities[city]) return this.cities[city]
 
     // add listener
     this.game.obs.sub(`bourse:${city}.bonus`,
       bonus => this.cities[city]._bonus += bonus
     )
-    
+    const that = this;
     // create the city
-    return this.cities[city] = {
-      bourse: this.main.subBourse({power: 5})
+    return that.cities[city] = {
+      bourse: that.main.subBourse({power: 5})
       ,_bonus: 0
       ,get bonus() {
-        return this.bonus + this.cities[city]._bonus
+        return that.bonus + that.cities[city]._bonus
       }
       ,products: {}
-      ,addProduct(product) {
-        let currentCity = this.cities[city]
+      ,getProduct(product) {
+        let currentCity = that.cities[city]
+        if(currentCity.products[product]) return currentCity.products[product]
         // ajout du listener pour la modification du bonus
-        this.game.obs.sub(`bourse:${city}:${product}.bonus`,
+        that.game.obs.sub(`bourse:${city}:${product}.bonus`,
           bonus => currentCity.products[product]._bonus += bonus
         )
 
@@ -59,15 +59,13 @@ class Bourse {
           }
           ,get fluctuation() {
             let currentProduct = currentCity.products[product]
-            let index = this.game.current.timeSlice
             // retourne la valeur en pourcentage de la bourse actuelle
-            return Math.max(currentProduct.bourse.get(index) + currentProduct.bonus, 0)
+            return Math.max(currentProduct.bourse.get(that._index) + currentProduct.bonus, 0)
           }
           ,get line() {
             let currentProduct = currentCity.products[product]
-            let index = this.game.current.timeSlice
             // retourne la liste de valeurs de la bourse du produit
-            return currentProduct.bourse.getLineUntil(index)
+            return currentProduct.bourse.getLineUntil(that._index)
           }
         }
       }
@@ -75,7 +73,7 @@ class Bourse {
   }
 
   getFluctuation(city, product) {
-    return this.cities[city].products[product].fluctuation
+    return that.cities[city].products[product].fluctuation
   }
 }
 

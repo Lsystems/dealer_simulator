@@ -145,10 +145,16 @@ class Cities{
                 }
                 this.cities[this.game.current.city].currentPrices[mode][productName]=parseFloat(price);
             }
-            
-            return parseFloat(price);
+
+            // ajoute la variation de bourse
+            return (parseFloat(price) * (this.game.bourse
+                .getCity(this.game.current.city)
+                .getProduct(product)
+                .fluctuation
+            /100)).toFixed(2)
         }
         catch(e){
+            throw e
             console.log(e);
             return 0;
         }

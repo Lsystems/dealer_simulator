@@ -41,7 +41,7 @@ class Timer{
             if(this.nextTimeSlice<this.game.todayPosix){
                 this.nextTimeSlice=this.getNextTimeSlice();
                 console.log('nextST')
-                // this.game.obs.trigger("timer:sliceTime");
+                this.game.obs.trigger("timer:sliceTime");
                 
             }
 
