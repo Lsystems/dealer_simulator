@@ -14,11 +14,7 @@ class Timer{
     }
     
     getNextTimeSlice(){
-        let threeHours=10800000; // ms
-        let currentSliceTime=(this.game.current.dayZero+(this.game.current.timeSlice*threeHours));
-        console.log(this.game.current.timeSlice*threeHours);
-        return currentSliceTime+threeHours;
-        
+        return (this.nextTimeSlice || this.game.current.timeSlice)+10800000;
     }
     
     start(){
