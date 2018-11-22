@@ -34,18 +34,11 @@ class Game{
             ,weaponPocketAmnt:0
             ,weaponPocketDefaultCapacity:1
             ,hasBackPack:false
-<<<<<<< HEAD
             ,timeSlice:0
-            
-        }   
-
-=======
             ,bourseSeed:'INITIAL_SEED'
             ,eventLog: []
         }
         
-        
->>>>>>> master
         this.modal=new Modal(this);
         this.timer=new Timer(this);
         this.items=new Items(this);

@@ -10,6 +10,15 @@ class Timer{
             ,month:[]
             ,year:[]
         };
+        
+    }
+    
+    getNextTimeSlice(){
+        let threeHours=10800000; // ms
+        let currentSliceTime=(this.game.current.dayZero+(this.game.current.timeSlice*threeHours));
+        console.log(this.game.current.timeSlice*threeHours);
+        return currentSliceTime+threeHours;
+        
     }
     
     start(){
@@ -17,6 +26,9 @@ class Timer{
             this.pause();
         }
         this.timeInterval=setInterval(()=>{
+            if(!this.nextTimeSlice){
+                this.nextTimeSlice=this.getNextTimeSlice();
+            }
             this.game.todayPosix+=this.game.timerIncr();
             let d=new Date(this.game.todayPosix);
             
@@ -26,13 +38,12 @@ class Timer{
             
             this.game.obs.trigger("timer:second");
 
-            let threeHours=10800000; // ms
             // let oneTimeSlice=
-            let currentSliceTime=(this.game.current.dayZero+(this.game.current.timeSlice*threeHours));
-            let nextTimeSlice=currentSliceTime+threeHours;
             
+            console.log(this.nextTimeSlice<this.game.todayPosix,this.nextTimeSlice,this.game.todayPosix);
             // la tranche de temps pour tout le jeu = 3h
-            if(nextTimeSlice>this.game.todayPosix){
+            if(this.nextTimeSlice<this.game.todayPosix){
+                this.nextTimeSlice=this.getNextTimeSlice();
                 console.log('nextST')
                 // this.game.obs.trigger("timer:sliceTime");
                 
