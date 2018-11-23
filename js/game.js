@@ -34,7 +34,7 @@ class Game{
             ,weaponPocketAmnt:0
             ,weaponPocketDefaultCapacity:1
             ,hasBackPack:false
-            ,timeSlice:0
+            ,timeSliceNumber:0
             ,bourseSeed:'INITIAL_SEED'
             ,eventLog: []
         }
@@ -47,6 +47,8 @@ class Game{
         this.market=new Market(this);
         this.cart=new Cart(this);
         this.bourse=new Bourse(this);
+
+        // l'UI en dernier
         this.UI=new Interface(this);
         this.UI.init();
     }

@@ -66,14 +66,27 @@ class Interface{
             attr:{
                 id:'timer'
             }
+            ,html:`
+                <div class="t_current"></div>
+                <div class="t_next"></div>
+            `
         });
         this.header.appendChild(this.timerBox);
         // premier affichage
-        this.timerBox.innerHTML=this.game.userFriendlyTime(this.game.today);
+        let tCurrNode=this.timerBox.querySelector('.t_current');
+        let tNextNode=this.timerBox.querySelector('.t_next');
+        
+        tCurrNode.innerHTML=this.game.userFriendlyTime();
+        tNextNode.innerHTML=this.game.userFriendlyTime(this.nextTimeSlice);
         
         // toute les secondes on refresh
         this.game.obs.sub('timer:second',()=>{
-            this.timerBox.innerHTML=this.game.userFriendlyTime();
+            tCurrNode.innerHTML=this.game.userFriendlyTime();
+        });
+        
+        // toute les timeslice on refresh
+        this.game.obs.sub('timer:sliceTime',(nts)=>{
+            tNextNode.innerHTML=this.game.userFriendlyTime(nts);
         });
     }
     
