@@ -366,9 +366,9 @@ class Market{
         b.addEventListener('click',()=>{
             let qty=1;
             // sécurise l'input
-            if(this.hasBuyAllBtn(item)){
+            if(this.hasBuyAllBtn(item))
                 qty=parseInt((lineNodes.pl_qty.querySelector('input')).value);
-            }
+            
             if(qty>0)
                 this.game.items.buy(item,qty);
         });
@@ -390,15 +390,10 @@ class Market{
             });
             
             b.addEventListener('click',()=>{
-                let qty=this.getMaxBuy(item);
-                if(qty>0)
+                if(qty>this.getMaxBuy(item))
                     this.game.items.buy(item,qty);        
             });
-            
-            this.game.obs.sub('buyItem',()=>{
-                b.innerHTML=maxAmnt();
-            });
-            
+                                
             // vide et remplit
             lineNodes.pl_buya.innerHTML='';
             lineNodes.pl_buya.appendChild(b);
@@ -413,16 +408,19 @@ class Market{
     // renvoi le max d'achat pour un item
     getMaxBuy(item){
         try{
-            
             let isNotAGun=item.type==='weapon' && item.isAmmo || item.type!=='weapon';
             let amnt=0;
             
             // la place restante dans les poches
             if(isNotAGun && item.pocketVol!==0){
-                amnt=parseInt(((this.game.getPocketCapacity()-this.game.current.pocketAmnt)/item.pocketVol).toFixed(0));
+                let cap=this.game.getPocketCapacity();
+                
+                console.log(item.code,cap,item.pocketVol)
+                amnt=Math.floor(cap/item.pocketVol);
             }
-            else{
-                // armes
+
+            // armes
+            if(!isNotAGun){
                 amnt=this.game.getWeaponPocketCapacity()-this.game.current.weaponPocketAmnt;
             }
             
@@ -444,7 +442,7 @@ class Market{
 
     onEvent(){
         
-        // librairie d'action par item
+        // librairie d'action spécifique par item pour gérer l'interface
         let actionOnItem={
             // sac à dos
             backpack:(item)=>{
@@ -462,6 +460,10 @@ class Market{
             }
         });
         
+        this.game.obs.sub('pocketsRefreshed',()=>{
+            this.refresh();
+        });
+
         // au changement d'une ville
         this.game.obs.sub('enterCity',()=>{
             this.refresh();

@@ -87,7 +87,6 @@ class Transports{
         if(ok){
             this.game.current.transport=transCode;
             this.game.obs.trigger("enterTransport",transCode);
-            TOOLS.log('NOTICE:: Transports change transport : '+transCode);
         }
     }
 

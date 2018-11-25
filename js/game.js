@@ -63,7 +63,7 @@ class Game{
         )
     }
     
-    getPocketCapacity(){
+    getTotalPocketCapacity(){
         let def=this.current.pocketDefaultCapacity;
         
         // bonus transport
@@ -73,6 +73,11 @@ class Game{
         let bagBonus=this.current.hasBackPack?20:0;
         
         return def + transportBonus + bagBonus;
+    }
+    
+    getPocketCapacity(){
+        
+        return this.getTotalPocketCapacity() - this.current.pocketAmnt;
     }
     
     getWeaponPocketCapacity(){

@@ -121,6 +121,7 @@ class Interface{
                 <span>Cr.</span>
             </div>
         `;
+        TOOLS.log('NOTICE:: $$ BANK $$ Refresh');
     }
     
     hud(){
@@ -282,7 +283,7 @@ class Interface{
         this.hudNode.appendChild(transMenu);        
     }
     
-    pockets(amnt=this.game.current.pocketAmnt,total=this.game.getPocketCapacity()){
+    pockets(amnt=this.game.current.pocketAmnt,total=this.game.getTotalPocketCapacity()){
         if(!this.pocketsNode){
             this.pocketsNode=TOOLS.createElement({
                 attr:{
@@ -297,8 +298,11 @@ class Interface{
             });
             this.hudNode.appendChild(this.pocketsNode);
             
+            // on s'abonne à tout ce qui peut faire changer les poches
             this.game.obs.sub('buyItem',()=>this.pockets());
             this.game.obs.sub('sellItem',()=>this.pockets());
+            this.game.obs.sub('enterTransport',()=>this.pockets());
+            this.game.obs.sub('buyBackPack',()=>{this.pockets},{noRepeat:true});
         }
         
         // update
@@ -310,8 +314,8 @@ class Interface{
         }
         amntNode.innerHTML=amnt;
         this.pocketsNode.querySelector('#pvtotal').innerHTML=total;
-        
-        this.game.obs.sub('buyBackPack',()=>{this.pockets},{noRepeat:true});
+
+        this.game.obs.trigger('pocketsRefreshed');
     }
     
     refreshToolBoxVol(amnt=this.game.current.weaponPocketAmnt,total=this.game.getWeaponPocketCapacity()){
@@ -353,7 +357,7 @@ class Interface{
             // au click sur un lien ville
             ((n,cityCode,cityObj)=>{
                 n.addEventListener('click',()=>{
-                    if(this.game.current.pocketAmnt<=this.game.getPocketCapacity()){
+                    if(this.game.current.pocketAmnt<=this.game.getTotalPocketCapacity()){
                         
                         // on met à jour la ville, vers où on va
                         this.game.current.city=cityCode;

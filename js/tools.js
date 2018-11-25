@@ -43,7 +43,14 @@ const TOOLS={
     // retourne une id unique
     ,getUID:()=>'_' + Math.random().toString(36).substr(2, 9)
     
-    // logging avec couleur ;p
+    /* LOGGER
+        Author: Lukia
+        licence : http://www.wtfpl.net
+        scenario : TOOLS.log([flag]::[string]);
+        TOOLS.log('ERROR:: my error');
+        flags must be declared in the styles object
+        CSS follows the commons rules, each value of the array can contains only one proprerty
+    */
     ,log:(str)=>{
         let logLevel=0;
         let styles={

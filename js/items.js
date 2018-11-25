@@ -258,7 +258,7 @@ class Items{
         // ce n'est pas un flingue
         let isNotAGun=item.type==='weapon' && item.isAmmo || item.type!=='weapon';
         // il reste de la place dans les poches
-        let leftEmptySpace=(this.game.getPocketCapacity()-(totalVol+this.game.current.pocketAmnt))>=0;
+        let leftEmptySpace=(this.game.getPocketCapacity()-totalVol)>=0;
         
         // si on a assez d'argent et qu'on peut le mettre dans le panier
         if(haveEnoughMoney && ((isNotAGun && leftEmptySpace) || !isNotAGun)){
