@@ -39,7 +39,8 @@ class Timer{
                 this.game.current.timeSliceNumber++;
                 let nts=this.getNextTimeSlice();
                 this.nextTimeSlice=nts;
-                TOOLS.log('NOTICE:: nextST');
+                
+                // on renvoi la prochain sliceTime en paramètre
                 this.game.obs.trigger("timer:sliceTime",nts);
                 
             }

@@ -225,15 +225,23 @@ class Interface{
                 n.addEventListener('click',()=>{
                     try{
                         this.game.obs.trigger("changeTransport",t);
-                        this.game.obs.sub("enterTransport",()=>{
-                            console.log('enterTransport UI')
-                            // on change l'icone
-                            let newTrans=getCurrTrans();
-                            tCurr.innerHTML=getSVGIcon(newTrans.ico,{classe:'tm_ico'});
-                        },{noRepeat:true});
                     }
                     catch(e){
                         TOOLS.log(e);
+                    }
+                });
+                
+                // on s'abonne à l'entrée dans un transport
+                this.game.obs.sub("enterTransport",(transCode)=>{
+                    // si c'est le notre actuel
+                    if(transCode===t){
+                        TOOLS.log('NOTICE:: sub enterTransport UI');
+                        // on change l'icone
+                        let newTrans=getCurrTrans();
+                        tCurr.innerHTML=getSVGIcon(newTrans.ico,{classe:'tm_ico'});
+                        // on change la classe
+                        tChoice.querySelector('.tm_item.actual').classList.remove('actual');
+                        n.classList.add('actual');
                     }
                 });
             }
@@ -250,6 +258,7 @@ class Interface{
                    n.addEventListener('click',(e)=>{
                       e.stopPropagation();
                       let bought=this.game.transports.buyTransport(t);
+                      // si ok pour l'achat, on retire le bouton d'achat
                       if(bought){
                           n.parentNode.removeChild(n);
                           tIt.classList.remove('inactive');
@@ -259,7 +268,7 @@ class Interface{
                       else{
                           
                         // erreur
-                        this.errorModal({reason:'money'});
+                        this.game.obs.trigger('notEnoughMoneyToBuy');
                       }
                    });
                 })(buyTransBtn,tItem,tr);
